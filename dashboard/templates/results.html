@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results — {{ data.keyword }}</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      padding: 40px 24px 80px;
+    }
+
+    .container { max-width: 960px; margin: 0 auto; }
+
+    /* ── Header ── */
+    .header { margin-bottom: 32px; }
+    .back {
+      display: inline-block;
+      font-size: 13px;
+      color: #6b7280;
+      text-decoration: none;
+      margin-bottom: 18px;
+    }
+    .back:hover { color: #f59e0b; }
+    .header h1 { font-size: 24px; font-weight: 700; color: #f1f5f9; }
+    .meta {
+      margin-top: 6px;
+      font-size: 13px;
+      color: #6b7280;
+    }
+    .meta span {
+      display: inline-block;
+      margin-right: 18px;
+      background: #1a1d27;
+      border: 1px solid #2d3148;
+      border-radius: 5px;
+      padding: 3px 10px;
+    }
+
+    /* ── Section headers ── */
+    .section { margin-bottom: 32px; }
+    .section-title {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #6b7280;
+      margin-bottom: 14px;
+    }
+
+    /* ── Psychology badges ── */
+    .psych-grid {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .psych-card {
+      flex: 1;
+      min-width: 150px;
+      background: #1a1d27;
+      border: 1px solid #2d3148;
+      border-radius: 10px;
+      padding: 18px 20px;
+    }
+
+    .psych-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #9ca3af;
+      margin-bottom: 8px;
+    }
+
+    .psych-score {
+      font-size: 28px;
+      font-weight: 700;
+    }
+
+    .psych-score.panic        { color: #ef4444; }
+    .psych-score.boycott      { color: #f59e0b; }
+    .psych-score.trust        { color: #a78bfa; }
+
+    .mood-badge {
+      display: inline-block;
+      margin-top: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .mood-panic        { background: #7f1d1d; color: #fca5a5; }
+    .mood-boycott      { background: #78350f; color: #fcd34d; }
+    .mood-trust_collapse { background: #4c1d95; color: #c4b5fd; }
+    .mood-neutral      { background: #1f2937; color: #9ca3af; }
+
+    /* ── Company signals table ── */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      background: #1a1d27;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid #2d3148;
+    }
+
+    thead th {
+      padding: 12px 16px;
+      text-align: left;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: #6b7280;
+      background: #13151f;
+      border-bottom: 1px solid #2d3148;
+    }
+
+    tbody td {
+      padding: 12px 16px;
+      font-size: 14px;
+      border-bottom: 1px solid #1f2535;
+    }
+
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover { background: #1f2535; }
+
+    .signal-up      { color: #34d399; font-weight: 700; }
+    .signal-down    { color: #f87171; font-weight: 700; }
+    .signal-neutral { color: #9ca3af; font-weight: 700; }
+
+    .conf-high   { color: #f59e0b; }
+    .conf-medium { color: #60a5fa; }
+    .conf-low    { color: #6b7280; }
+
+    .score-positive { color: #34d399; }
+    .score-negative { color: #f87171; }
+    .score-zero     { color: #9ca3af; }
+
+    /* ── Gold signal box ── */
+    .gold-box {
+      border-radius: 10px;
+      padding: 24px 28px;
+      border: 1px solid;
+    }
+
+    .gold-bullish  { background: #14251a; border-color: #065f46; }
+    .gold-bearish  { background: #250f0f; border-color: #7f1d1d; }
+    .gold-neutral  { background: #1a1d27; border-color: #2d3148; }
+
+    .gold-verdict {
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+
+    .gold-bullish .gold-verdict  { color: #34d399; }
+    .gold-bearish .gold-verdict  { color: #f87171; }
+    .gold-neutral .gold-verdict  { color: #9ca3af; }
+
+    .gold-meta {
+      font-size: 13px;
+      color: #9ca3af;
+      margin-bottom: 12px;
+    }
+
+    .gold-reason { font-size: 14px; color: #d1d5db; line-height: 1.6; }
+
+    /* ── Summary bar ── */
+    .summary-grid {
+      display: flex;
+      gap: 14px;
+      flex-wrap: wrap;
+    }
+
+    .summary-card {
+      flex: 1;
+      min-width: 130px;
+      background: #1a1d27;
+      border: 1px solid #2d3148;
+      border-radius: 10px;
+      padding: 18px 20px;
+      text-align: center;
+    }
+
+    .summary-num  { font-size: 32px; font-weight: 800; }
+    .summary-lbl  { font-size: 12px; color: #6b7280; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+    .num-up       { color: #34d399; }
+    .num-down     { color: #f87171; }
+    .num-neutral  { color: #9ca3af; }
+    .num-total    { color: #60a5fa; }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <a class="back" href="/">&larr; New Analysis</a>
+    <h1>{{ data.keyword }}</h1>
+    <div class="meta">
+      <span>{{ data.event_type | capitalize }}</span>
+      <span>{{ data.region }}</span>
+      <span>{{ data.articles_found }} article(s) found</span>
+    </div>
+  </div>
+
+  <!-- Psychology -->
+  <div class="section">
+    <div class="section-title">Community Psychology</div>
+    <div class="psych-grid">
+      <div class="psych-card">
+        <div class="psych-label">Panic</div>
+        <div class="psych-score panic">{{ data.psychology_summary.avg_panic }}<small style="font-size:14px;color:#6b7280">/10</small></div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-label">Boycott</div>
+        <div class="psych-score boycott">{{ data.psychology_summary.avg_boycott }}<small style="font-size:14px;color:#6b7280">/10</small></div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-label">Trust Collapse</div>
+        <div class="psych-score trust">{{ data.psychology_summary.avg_trust_collapse }}<small style="font-size:14px;color:#6b7280">/10</small></div>
+      </div>
+      <div class="psych-card">
+        <div class="psych-label">Overall Mood</div>
+        <div style="margin-top:6px">
+          <span class="mood-badge mood-{{ data.psychology_summary.overall_mood }}">
+            {{ data.psychology_summary.overall_mood | replace('_', ' ') }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Company Signals -->
+  <div class="section">
+    <div class="section-title">Company Signals ({{ data.company_signals | length }})</div>
+    {% if data.company_signals %}
+    <table>
+      <thead>
+        <tr>
+          <th>Signal</th>
+          <th>Score</th>
+          <th>Confidence</th>
+          <th>Driver</th>
+          <th>Company</th>
+          <th>Sector</th>
+          <th>Ticker</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in data.company_signals %}
+        <tr>
+          <td class="signal-{{ c.signal | lower }}">{{ c.signal }}</td>
+          <td class="{% if c.final_score > 0 %}score-positive{% elif c.final_score < 0 %}score-negative{% else %}score-zero{% endif %}">
+            {{ "%+.2f" | format(c.final_score) }}
+          </td>
+          <td class="conf-{{ c.confidence }}">{{ c.confidence }}</td>
+          <td style="color:#9ca3af">{{ c.signal_driver | replace('_', ' ') }}</td>
+          <td>{{ c.name[:38] }}{% if c.name | length > 38 %}…{% endif %}</td>
+          <td style="color:#9ca3af">{{ c.sector }}</td>
+          <td style="color:#6b7280;font-family:monospace">{{ c.ticker }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:#6b7280;padding:20px 0">No companies matched this event/region combination.</p>
+    {% endif %}
+  </div>
+
+  <!-- Gold Signal -->
+  <div class="section">
+    <div class="section-title">Gold Signal</div>
+    <div class="gold-box gold-{{ data.gold_signal.signal | lower }}">
+      <div class="gold-verdict">GOLD {{ data.gold_signal.signal }}</div>
+      <div class="gold-meta">
+        Score: {{ "%+.2f" | format(data.gold_signal.final_score) }} &nbsp;|&nbsp;
+        Confidence: {{ data.gold_signal.confidence }} &nbsp;|&nbsp;
+        Driver: {{ data.gold_signal.primary_driver | replace('_', ' ') }}
+      </div>
+      <div class="gold-reason">{{ data.gold_signal.reasoning }}</div>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="section">
+    <div class="section-title">Final Summary</div>
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="summary-num num-total">{{ data.summary.total }}</div>
+        <div class="summary-lbl">Companies</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-num num-up">{{ data.summary.up_count }}</div>
+        <div class="summary-lbl">UP</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-num num-down">{{ data.summary.down_count }}</div>
+        <div class="summary-lbl">DOWN</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-num num-neutral">{{ data.summary.neutral_count }}</div>
+        <div class="summary-lbl">NEUTRAL</div>
+      </div>
+      <div class="summary-card">
+        <div class="summary-num" style="color:#fcd34d;font-size:20px;padding-top:6px">{{ data.gold_signal.signal }}</div>
+        <div class="summary-lbl">Gold</div>
+      </div>
+    </div>
+  </div>
+
+  <a class="back" href="/">&larr; Run Another Analysis</a>
+
+</div>
+</body>
+</html>

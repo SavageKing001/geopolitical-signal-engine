@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python -m company_database.sector_mapper)",
+      "Bash(python -m sentiment_layer.psychology_signals)",
+      "Bash(python -m sentiment_layer.reddit_scraper)",
+      "Bash(python -m signal_engine.scorer)",
+      "Bash(python -m gold_module.gold_signal)",
+      "Bash(python main.py)"
+    ]
+  }
+}

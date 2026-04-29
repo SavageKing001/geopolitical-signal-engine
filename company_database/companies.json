@@ -1,0 +1,202 @@
+[
+  {
+    "name": "Kosmos Energy",
+    "ticker": "KOS",
+    "sector": "energy",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["Ghana", "Senegal", "Mauritania", "Equatorial Guinea"],
+    "supply_chain_dependencies": ["USA", "UK", "Nigeria"],
+    "market_cap_category": "small",
+    "description": "Deepwater oil and gas explorer focused entirely on West Africa and the Atlantic margins."
+  },
+  {
+    "name": "Vaalco Energy",
+    "ticker": "EGY",
+    "sector": "energy",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["Gabon", "Egypt", "Equatorial Guinea"],
+    "supply_chain_dependencies": ["USA", "France", "UAE"],
+    "market_cap_category": "small",
+    "description": "Independent oil producer operating mature fields across Sub-Saharan Africa and North Africa."
+  },
+  {
+    "name": "Karoon Energy",
+    "ticker": "KAR",
+    "sector": "energy",
+    "headquarters_country": "Australia",
+    "revenue_exposure": ["Brazil", "Australia"],
+    "supply_chain_dependencies": ["Brazil", "USA", "China"],
+    "market_cap_category": "small",
+    "description": "Australian oil producer with its primary producing asset in the Santos Basin offshore Brazil."
+  },
+  {
+    "name": "Amtech Systems",
+    "ticker": "ASYS",
+    "sector": "semiconductors",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["USA", "China", "Germany", "South Korea", "Taiwan"],
+    "supply_chain_dependencies": ["Japan", "Germany", "China"],
+    "market_cap_category": "small",
+    "description": "Makes thermal processing and wafer handling equipment sold to chip fabs worldwide."
+  },
+  {
+    "name": "Photronics",
+    "ticker": "PLAB",
+    "sector": "semiconductors",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["Taiwan", "South Korea", "China", "USA", "Europe"],
+    "supply_chain_dependencies": ["Japan", "Germany", "USA"],
+    "market_cap_category": "small",
+    "description": "Manufactures photomasks — the master templates used to print circuit patterns onto semiconductor wafers."
+  },
+  {
+    "name": "Cohu",
+    "ticker": "COHU",
+    "sector": "semiconductors",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["Malaysia", "Philippines", "Taiwan", "China", "USA"],
+    "supply_chain_dependencies": ["Malaysia", "Philippines", "Japan"],
+    "market_cap_category": "mid",
+    "description": "Supplies semiconductor test and handling equipment primarily to back-end assembly and test facilities in Southeast Asia."
+  },
+  {
+    "name": "Euroseas",
+    "ticker": "ESEA",
+    "sector": "shipping",
+    "headquarters_country": "Greece",
+    "revenue_exposure": ["Global", "Asia", "Europe", "Americas"],
+    "supply_chain_dependencies": ["China", "South Korea", "Singapore"],
+    "market_cap_category": "small",
+    "description": "Greek owner-operator of containerships serving feeder routes between major and regional ports."
+  },
+  {
+    "name": "Pangaea Logistics Solutions",
+    "ticker": "PANL",
+    "sector": "shipping",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["Russia", "Canada", "Norway", "Iceland", "Chile"],
+    "supply_chain_dependencies": ["Norway", "Finland", "China"],
+    "market_cap_category": "small",
+    "description": "Specialises in ice-class bulk carrier voyages to Arctic and other challenging ports year-round."
+  },
+  {
+    "name": "Himalaya Shipping",
+    "ticker": "HSHP",
+    "sector": "shipping",
+    "headquarters_country": "Bermuda",
+    "revenue_exposure": ["Global", "Brazil", "Australia", "South Africa"],
+    "supply_chain_dependencies": ["China", "South Korea"],
+    "market_cap_category": "small",
+    "description": "Newbuild Kamsarmax dry bulk fleet focused on coal and grain trades exposed to commodity and sanctions flows."
+  },
+  {
+    "name": "Limoneira Company",
+    "ticker": "LMNR",
+    "sector": "agriculture",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["USA", "Chile", "South Africa", "Spain"],
+    "supply_chain_dependencies": ["Chile", "Mexico", "USA"],
+    "market_cap_category": "small",
+    "description": "Grows and markets lemons and avocados from California and Chile, with revenues tied to global citrus trade lanes."
+  },
+  {
+    "name": "Adecoagro",
+    "ticker": "AGRO",
+    "sector": "agriculture",
+    "headquarters_country": "Luxembourg",
+    "revenue_exposure": ["Argentina", "Brazil", "Uruguay", "Europe"],
+    "supply_chain_dependencies": ["Argentina", "Brazil", "USA"],
+    "market_cap_category": "mid",
+    "description": "South American agri-industrial company producing sugar, ethanol, rice, and dairy across the Southern Cone."
+  },
+  {
+    "name": "Kaveri Seed Company",
+    "ticker": "KSCL.NS",
+    "sector": "agriculture",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Bangladesh", "Myanmar", "Sri Lanka"],
+    "supply_chain_dependencies": ["India", "China"],
+    "market_cap_category": "mid",
+    "description": "Indian hybrid seed developer supplying cotton, corn, and vegetable seeds across South and Southeast Asia."
+  },
+  {
+    "name": "HEICO Corporation (Electronic Technologies Group)",
+    "ticker": "HEI",
+    "sector": "defence",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["USA", "Europe", "Middle East", "Asia"],
+    "supply_chain_dependencies": ["USA", "Germany", "UK"],
+    "market_cap_category": "mid",
+    "description": "Makes FAA-approved replacement parts for commercial and military aircraft at a fraction of OEM prices."
+  },
+  {
+    "name": "Chemring Group",
+    "ticker": "CHG.L",
+    "sector": "defence",
+    "headquarters_country": "UK",
+    "revenue_exposure": ["USA", "UK", "Norway", "Australia", "Middle East"],
+    "supply_chain_dependencies": ["UK", "USA", "Germany"],
+    "market_cap_category": "mid",
+    "description": "UK-listed manufacturer of countermeasures, energetic materials, and electronic warfare systems for NATO militaries."
+  },
+  {
+    "name": "Aerojet Rocketdyne (L3Harris spin-out assets) — Kratos Defense",
+    "ticker": "KTOS",
+    "sector": "defence",
+    "headquarters_country": "USA",
+    "revenue_exposure": ["USA", "Australia", "UK", "Middle East"],
+    "supply_chain_dependencies": ["USA", "Taiwan", "UK"],
+    "market_cap_category": "mid",
+    "description": "Builds unmanned aerial systems, rocket propulsion, and satellite ground systems for US and allied defence programmes."
+  },
+  {
+    "name": "Tingyi (Cayman Islands) Holding",
+    "ticker": "0322.HK",
+    "sector": "consumer goods",
+    "headquarters_country": "China",
+    "revenue_exposure": ["China"],
+    "supply_chain_dependencies": ["China", "Indonesia", "Malaysia", "Ukraine"],
+    "market_cap_category": "mid",
+    "description": "Dominant maker of instant noodles and beverages in China with wheat and palm oil supply chains exposed to war-related disruptions."
+  },
+  {
+    "name": "Bim Birlesik Magazalar",
+    "ticker": "BIMAS.IS",
+    "sector": "consumer goods",
+    "headquarters_country": "Turkey",
+    "revenue_exposure": ["Turkey", "Morocco", "Egypt"],
+    "supply_chain_dependencies": ["Turkey", "China", "Egypt"],
+    "market_cap_category": "mid",
+    "description": "Turkey's largest hard-discount grocery chain with operations in North Africa, highly exposed to Turkish lira volatility."
+  },
+  {
+    "name": "Lotte Chilsung Beverage",
+    "ticker": "005300.KS",
+    "sector": "consumer goods",
+    "headquarters_country": "South Korea",
+    "revenue_exposure": ["South Korea", "China", "Vietnam", "Philippines"],
+    "supply_chain_dependencies": ["South Korea", "China", "USA"],
+    "market_cap_category": "mid",
+    "description": "South Korean producer of carbonated drinks, juice, and alcoholic beverages with growing Southeast Asia distribution."
+  },
+  {
+    "name": "Transportadora de Gas del Sur (TGS)",
+    "ticker": "TGS",
+    "sector": "energy",
+    "headquarters_country": "Argentina",
+    "revenue_exposure": ["Argentina", "Chile", "Brazil"],
+    "supply_chain_dependencies": ["Argentina", "USA", "Italy"],
+    "market_cap_category": "mid",
+    "description": "Operates Argentina's largest natural gas pipeline network and is a key node in Southern Cone energy security."
+  },
+  {
+    "name": "Siltronic AG",
+    "ticker": "WAF.DE",
+    "sector": "semiconductors",
+    "headquarters_country": "Germany",
+    "revenue_exposure": ["USA", "Japan", "South Korea", "Taiwan", "Europe"],
+    "supply_chain_dependencies": ["Germany", "Singapore", "Japan", "USA"],
+    "market_cap_category": "mid",
+    "description": "German manufacturer of hyperpure silicon wafers — the foundational substrate for virtually all semiconductor chips."
+  }
+]
