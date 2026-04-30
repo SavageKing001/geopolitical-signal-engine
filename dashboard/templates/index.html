@@ -3,134 +3,507 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Geopolitical Signal Engine</title>
+  <title>GEOPOLITICAL SIGNAL ENGINE</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    :root {
+      --bg-primary:   #050810;
+      --bg-secondary: #0a0f1e;
+      --bg-card:      #0d1428;
+      --accent-cyan:  #00d4ff;
+      --accent-amber: #ffb800;
+      --accent-red:   #ff3d3d;
+      --accent-green: #00ff88;
+      --border-glow:  rgba(0, 212, 255, 0.3);
+      --text-primary: #e8f4fd;
+      --text-secondary: #7a9bb5;
+      --grid-color:   rgba(0, 212, 255, 0.05);
+    }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html, body {
+      height: 100%;
+    }
+
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #0f1117;
-      color: #e2e8f0;
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
+      overflow-x: hidden;
+      position: relative;
     }
 
-    .card {
-      background: #1a1d27;
-      border: 1px solid #2d3148;
-      border-radius: 12px;
-      padding: 48px 56px;
+    /* ── Scanlines ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Grid background ── */
+    @keyframes gridScroll {
+      0%   { background-position: 0 0; }
+      100% { background-position: 60px 60px; }
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridScroll 14s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── Vignette ── */
+    .vignette {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at center,
+        transparent 40%,
+        rgba(5,8,16,0.7) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Radar rings ── */
+    @keyframes radarExpand {
+      0%   { transform: scale(0.2); opacity: 0.7; }
+      80%  { opacity: 0.05; }
+      100% { transform: scale(1.2); opacity: 0; }
+    }
+
+    .radar-container {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 700px;
+      height: 700px;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .radar-ring {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 1px solid var(--accent-cyan);
+      animation: radarExpand 5s ease-out infinite;
+    }
+    .radar-ring:nth-child(2) { animation-delay: 1.6s; }
+    .radar-ring:nth-child(3) { animation-delay: 3.2s; }
+
+    /* ── Main wrapper ── */
+    .main-wrapper {
+      position: relative;
+      z-index: 10;
       width: 100%;
       max-width: 520px;
+      padding: 32px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
 
-    .logo {
+    /* ── System label ── */
+    .sys-label {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--accent-cyan);
+      opacity: 0.6;
+      text-transform: uppercase;
+      margin-bottom: 14px;
+    }
+
+    /* ── Main title ── */
+    .main-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(18px, 5vw, 30px);
+      font-weight: 900;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      text-align: center;
+      line-height: 1.25;
+      color: var(--text-primary);
+      text-shadow:
+        0 0 16px var(--accent-cyan),
+        0 0 40px rgba(0,212,255,0.45),
+        0 0 90px rgba(0,212,255,0.15);
+      margin-bottom: 14px;
+    }
+
+    .title-cyan { color: var(--accent-cyan); }
+
+    /* ── Subtitle ── */
+    .subtitle {
+      font-family: 'IBM Plex Mono', monospace;
       font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 3px;
+      color: var(--text-secondary);
+      text-align: center;
+      line-height: 1.75;
+      letter-spacing: 0.4px;
+      max-width: 360px;
+      margin-bottom: 28px;
+    }
+
+    /* ── Status row ── */
+    @keyframes dotBlink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.15; }
+    }
+
+    .status-row {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-bottom: 28px;
+    }
+
+    .status-item {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 1.5px;
       text-transform: uppercase;
-      color: #6b7280;
-      margin-bottom: 8px;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
-    h1 {
-      font-size: 26px;
-      font-weight: 700;
-      color: #f1f5f9;
-      line-height: 1.2;
-      margin-bottom: 36px;
+    .sdot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      animation: dotBlink 2.2s ease-in-out infinite;
+    }
+    .sdot-green  { background: var(--accent-green); }
+    .sdot-amber  { background: var(--accent-amber); animation-delay: 0.7s; }
+
+    /* ── Card ── */
+    .form-card {
+      width: 100%;
+      background: rgba(13,20,40,0.88);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--border-glow);
+      border-radius: 3px;
+      padding: 36px 38px 40px;
+      position: relative;
+      box-shadow:
+        0 0 50px rgba(0,212,255,0.07),
+        0 0 100px rgba(0,212,255,0.03),
+        inset 0 0 50px rgba(0,0,0,0.25);
     }
 
-    h1 span { color: #f59e0b; }
-
-    label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.8px;
-      text-transform: uppercase;
-      color: #9ca3af;
-      margin-bottom: 7px;
+    /* Corner brackets — 4 spans inside the card */
+    .cb {
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      border-color: var(--accent-cyan);
+      border-style: solid;
+      opacity: 0.9;
     }
+    .cb-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .cb-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+    .cb-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+    .cb-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
 
+    /* ── Field ── */
     .field { margin-bottom: 22px; }
 
-    input[type="text"],
+    .field-label {
+      display: block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8.5px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 9px;
+    }
+
+    /* Keyword input */
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .pulse-dot {
+      position: absolute;
+      left: 13px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      animation: dotBlink 1.6s ease-in-out infinite;
+      z-index: 2;
+      flex-shrink: 0;
+    }
+
+    input[type="text"] {
+      width: 100%;
+      padding: 12px 14px 12px 32px;
+      background: rgba(5,8,16,0.8);
+      border: 1px solid rgba(0,212,255,0.12);
+      border-bottom: 1.5px solid rgba(0,212,255,0.4);
+      border-radius: 2px 2px 0 0;
+      color: var(--text-primary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      caret-color: var(--accent-cyan);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    input[type="text"]:focus {
+      border-color: rgba(0,212,255,0.35);
+      border-bottom-color: var(--accent-cyan);
+      box-shadow: 0 6px 24px rgba(0,212,255,0.12), inset 0 0 20px rgba(0,212,255,0.02);
+    }
+
+    input[type="text"]::placeholder {
+      color: rgba(122,155,181,0.35);
+      font-size: 12px;
+    }
+
+    /* Custom select */
+    .select-wrap {
+      position: relative;
+    }
+
+    .select-wrap::after {
+      content: '▼';
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 8px;
+      color: var(--accent-cyan);
+      pointer-events: none;
+    }
+
     select {
       width: 100%;
-      padding: 11px 14px;
-      background: #0f1117;
-      border: 1px solid #374151;
-      border-radius: 8px;
-      color: #f1f5f9;
-      font-size: 15px;
+      padding: 12px 36px 12px 13px;
+      background: rgba(5,8,16,0.8);
+      border: 1px solid rgba(0,212,255,0.18);
+      border-radius: 2px;
+      color: var(--text-primary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.5px;
       outline: none;
-      transition: border-color 0.15s;
-    }
-
-    input[type="text"]:focus,
-    select:focus { border-color: #f59e0b; }
-
-    select option { background: #1a1d27; }
-
-    button {
-      margin-top: 10px;
-      width: 100%;
-      padding: 13px;
-      background: #f59e0b;
-      color: #0f1117;
-      border: none;
-      border-radius: 8px;
-      font-size: 15px;
-      font-weight: 700;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
       cursor: pointer;
-      letter-spacing: 0.4px;
-      transition: background 0.15s;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
 
-    button:hover { background: #fbbf24; }
+    select:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 18px rgba(0,212,255,0.1);
+    }
+
+    select option {
+      background: #0a0f1e;
+      color: var(--text-primary);
+    }
+
+    /* Submit button */
+    @keyframes scanAnim {
+      0%   { top: -80%; }
+      100% { top: 160%; }
+    }
+
+    .analyze-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg,
+        rgba(0,185,228,0.92) 0%,
+        rgba(0,90,200,0.92) 100%);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 2px;
+      color: #020609;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 28px rgba(0,212,255,0.18);
+      transition: box-shadow 0.25s, transform 0.1s;
+      margin-top: 6px;
+    }
+
+    .analyze-btn::before {
+      content: '';
+      position: absolute;
+      left: 0;
+      width: 100%;
+      height: 50%;
+      background: linear-gradient(transparent, rgba(255,255,255,0.18), transparent);
+      top: -80%;
+    }
+
+    .analyze-btn:hover {
+      box-shadow:
+        0 0 50px rgba(0,212,255,0.35),
+        0 0 100px rgba(0,212,255,0.15);
+    }
+
+    .analyze-btn:hover::before {
+      animation: scanAnim 0.45s ease-in-out;
+    }
+
+    .analyze-btn:active { transform: scale(0.985); }
+
+    /* ── Divider ── */
+    .card-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg,
+        transparent,
+        rgba(0,212,255,0.2) 30%,
+        rgba(0,212,255,0.2) 70%,
+        transparent);
+      margin: 24px 0 22px;
+    }
+
+    /* ── Footer ── */
+    .footer-note {
+      margin-top: 22px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      letter-spacing: 2.5px;
+      color: rgba(122,155,181,0.35);
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 540px) {
+      .form-card { padding: 26px 20px 30px; }
+      .main-title { font-size: 18px; letter-spacing: 2px; }
+      .status-row { display: none; }
+      body { align-items: flex-start; overflow-y: auto; }
+      .main-wrapper { padding-top: 48px; }
+    }
   </style>
 </head>
 <body>
-  <div class="card">
-    <p class="logo">Signal Engine</p>
-    <h1>Geopolitical <span>Signal</span> Analyzer</h1>
 
-    <form action="/analyze" method="POST">
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+
+<div class="radar-container">
+  <div class="radar-ring"></div>
+  <div class="radar-ring"></div>
+  <div class="radar-ring"></div>
+</div>
+
+<div class="main-wrapper">
+
+  <p class="sys-label">// GEO-SIG ENGINE &nbsp;·&nbsp; BUILD 2.1 &nbsp;·&nbsp; CLASSIFIED</p>
+
+  <h1 class="main-title">
+    GEOPOLITICAL<br><span class="title-cyan">SIGNAL</span> ENGINE
+  </h1>
+
+  <p class="subtitle">
+    Second-order market intelligence.<br>
+    Powered by geopolitical signal mapping.
+  </p>
+
+  <div class="status-row">
+    <span class="status-item"><span class="sdot sdot-green"></span>NEWSAPI ONLINE</span>
+    <span class="status-item"><span class="sdot sdot-amber"></span>REDDIT MOCK</span>
+    <span class="status-item"><span class="sdot sdot-green"></span>ENGINE READY</span>
+  </div>
+
+  <div class="form-card">
+    <span class="cb cb-tl"></span>
+    <span class="cb cb-tr"></span>
+    <span class="cb cb-bl"></span>
+    <span class="cb cb-br"></span>
+
+    <form action="/analyze" method="POST" autocomplete="off">
+
       <div class="field">
-        <label for="keyword">Keyword / Event Phrase</label>
-        <input type="text" id="keyword" name="keyword"
-               placeholder="e.g. Iran war, China trade tariffs"
-               required>
+        <label class="field-label" for="keyword">// Target Keyword</label>
+        <div class="input-wrap">
+          <span class="pulse-dot"></span>
+          <input type="text" id="keyword" name="keyword"
+                 placeholder="e.g. Iran conflict, China tariffs, Ukraine war"
+                 required>
+        </div>
       </div>
 
       <div class="field">
-        <label for="event_type">Event Type</label>
-        <select id="event_type" name="event_type">
-          <option value="conflict">Conflict</option>
-          <option value="trade">Trade</option>
-          <option value="sanction">Sanction</option>
-          <option value="election">Election</option>
-          <option value="economic">Economic</option>
-        </select>
+        <label class="field-label" for="event_type">// Event Classification</label>
+        <div class="select-wrap">
+          <select id="event_type" name="event_type">
+            <option value="conflict">⚔&nbsp;&nbsp; CONFLICT</option>
+            <option value="sanction">🚫&nbsp;&nbsp; SANCTION</option>
+            <option value="trade">📊&nbsp;&nbsp; TRADE DISPUTE</option>
+            <option value="election">🗳&nbsp;&nbsp; ELECTION</option>
+            <option value="economic">💥&nbsp;&nbsp; ECONOMIC CRISIS</option>
+            <option value="natural_disaster">🌊&nbsp;&nbsp; NATURAL DISASTER</option>
+          </select>
+        </div>
       </div>
 
-      <div class="field">
-        <label for="region">Region</label>
-        <select id="region" name="region">
-          <option value="Middle East">Middle East</option>
-          <option value="Asia">Asia</option>
-          <option value="Europe">Europe</option>
-          <option value="Americas">Americas</option>
-          <option value="Africa">Africa</option>
-          <option value="Global">Global</option>
-        </select>
+      <div class="field" style="margin-bottom: 0;">
+        <label class="field-label" for="region">// Target Region</label>
+        <div class="select-wrap">
+          <select id="region" name="region">
+            <option value="Middle East">🌍&nbsp;&nbsp; MIDDLE EAST</option>
+            <option value="Asia">🌏&nbsp;&nbsp; ASIA PACIFIC</option>
+            <option value="Europe">🌎&nbsp;&nbsp; EUROPE</option>
+            <option value="Americas">🗺&nbsp;&nbsp; AMERICAS</option>
+            <option value="Africa">🌐&nbsp;&nbsp; AFRICA</option>
+            <option value="Global">🔵&nbsp;&nbsp; GLOBAL</option>
+          </select>
+        </div>
       </div>
 
-      <button type="submit">Analyze &rarr;</button>
+      <div class="card-divider"></div>
+
+      <button type="submit" class="analyze-btn">ANALYZE THREAT &nbsp;→</button>
+
     </form>
   </div>
+
+  <p class="footer-note">For Research Purposes Only &nbsp;—&nbsp; Not Financial Advice</p>
+
+</div>
+
 </body>
 </html>

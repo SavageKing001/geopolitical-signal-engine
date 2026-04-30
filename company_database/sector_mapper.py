@@ -3,32 +3,48 @@ import os
 
 GEOPOLITICAL_IMPACT_MAP = {
     "conflict": {
-        "Middle East": ["energy", "shipping"],
-        "Asia":        ["semiconductors", "shipping", "consumer goods"],
-        "Europe":      ["energy", "defence", "agriculture", "shipping"],
+        # Middle East: rare-earth supply routes + phosphate transit affected
+        "Middle East": ["energy", "shipping", "mining and metals", "fertilizers and chemicals"],
+        # Asia: rare earths and lithium processing concentrated here
+        "Asia":        ["semiconductors", "mining and metals", "shipping", "consumer goods"],
+        # Europe: fertilizers first (Russia/Belarus are top exporters hit by war);
+        #         nickel/palladium (Russia) also impacted
+        "Europe":      ["fertilizers and chemicals", "energy", "defence",
+                        "agriculture", "shipping", "mining and metals"],
         "Americas":    ["agriculture", "energy", "consumer goods"],
-        "Africa":      ["energy", "agriculture", "shipping"],
+        # Africa: mining highest priority — Congo cobalt, South African platinum
+        "Africa":      ["mining and metals", "energy", "agriculture", "shipping"],
         "Global":      ["energy", "shipping", "defence"],
     },
     "sanction": {
-        "Europe":      ["energy", "agriculture", "shipping", "consumer goods"],
-        "Asia":        ["semiconductors", "consumer goods", "shipping"],
-        "Middle East": ["energy", "shipping"],
-        "Americas":    ["energy", "agriculture"],
-        "Africa":      ["energy", "agriculture"],
-        "Global":      ["energy", "semiconductors", "shipping"],
+        # Europe: fertilizers highest priority (Belarus potash sanctions);
+        #         critical minerals are a primary sanction lever
+        "Europe":      ["fertilizers and chemicals", "energy", "agriculture",
+                        "shipping", "consumer goods", "mining and metals"],
+        "Asia":        ["semiconductors", "consumer goods", "shipping", "mining and metals"],
+        "Middle East": ["energy", "shipping", "mining and metals"],
+        "Americas":    ["energy", "agriculture", "mining and metals"],
+        "Africa":      ["energy", "agriculture", "mining and metals"],
+        "Global":      ["energy", "semiconductors", "shipping", "mining and metals"],
     },
     "trade": {
-        "Asia":        ["semiconductors", "consumer goods", "shipping", "agriculture"],
-        "Americas":    ["agriculture", "energy", "consumer goods"],
+        # Asia: China controls rare-earth processing; fertilizer inputs routed here
+        "Asia":        ["semiconductors", "consumer goods", "shipping",
+                        "agriculture", "mining and metals", "fertilizers and chemicals"],
+        # Americas: Brazil is the world's largest fertilizer importer
+        "Americas":    ["agriculture", "energy", "consumer goods", "fertilizers and chemicals"],
         "Europe":      ["energy", "consumer goods", "agriculture"],
         "Middle East": ["energy", "shipping"],
         "Africa":      ["agriculture", "energy"],
-        "Global":      ["semiconductors", "consumer goods", "shipping", "agriculture"],
+        # Global trade disputes: critical minerals highest priority
+        "Global":      ["mining and metals", "semiconductors", "consumer goods",
+                        "shipping", "agriculture"],
     },
     "election": {
-        "Africa":      ["energy", "agriculture"],
-        "Americas":    ["energy", "agriculture", "consumer goods"],
+        # Africa: mining royalties are the primary election issue
+        "Africa":      ["mining and metals", "energy", "agriculture"],
+        # Americas: fertilizer import policy is a major agricultural election issue
+        "Americas":    ["energy", "agriculture", "consumer goods", "fertilizers and chemicals"],
         "Asia":        ["semiconductors", "consumer goods"],
         "Europe":      ["energy", "defence"],
         "Middle East": ["energy", "defence"],
@@ -43,12 +59,17 @@ GEOPOLITICAL_IMPACT_MAP = {
         "Global":      ["agriculture", "shipping"],
     },
     "economic": {
-        "Asia":        ["semiconductors", "consumer goods", "shipping"],
-        "Americas":    ["energy", "agriculture", "consumer goods"],
-        "Europe":      ["energy", "consumer goods", "defence"],
-        "Middle East": ["energy"],
-        "Africa":      ["energy", "agriculture"],
-        "Global":      ["energy", "semiconductors", "consumer goods"],
+        # All regions: both new sectors are macro-sensitive and get affected
+        "Asia":        ["semiconductors", "consumer goods", "shipping",
+                        "mining and metals", "fertilizers and chemicals"],
+        "Americas":    ["energy", "agriculture", "consumer goods",
+                        "mining and metals", "fertilizers and chemicals"],
+        "Europe":      ["energy", "consumer goods", "defence",
+                        "mining and metals", "fertilizers and chemicals"],
+        "Middle East": ["energy", "mining and metals", "fertilizers and chemicals"],
+        "Africa":      ["energy", "agriculture", "mining and metals", "fertilizers and chemicals"],
+        "Global":      ["energy", "semiconductors", "consumer goods",
+                        "mining and metals", "fertilizers and chemicals"],
     },
     "general": {
         "Middle East": ["energy", "shipping"],
@@ -145,6 +166,8 @@ if __name__ == "__main__":
     test_cases = [
         ("conflict", "Middle East"),
         ("trade",    "Asia"),
+        ("conflict", "Africa"),
+        ("sanction", "Europe"),
     ]
 
     for event_type, region in test_cases:
@@ -156,4 +179,4 @@ if __name__ == "__main__":
         if not results:
             print("  No matching companies found.")
         for c in results:
-            print(f"  [{c['relevance_score']:2d}]  {c['ticker']:<12}  {c['sector']:<16}  {c['name']}")
+            print(f"  [{c['relevance_score']:2d}]  {c['ticker']:<14}  {c['sector']:<28}  {c['name']}")
