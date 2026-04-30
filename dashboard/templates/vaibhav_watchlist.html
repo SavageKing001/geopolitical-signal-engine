@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MY WATCHLIST — VAIBHAV</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-primary:     #050810;
+      --bg-secondary:   #0a0f1e;
+      --bg-card:        #0d1428;
+      --accent-cyan:    #00d4ff;
+      --accent-amber:   #ffb800;
+      --accent-red:     #ff3d3d;
+      --accent-green:   #00ff88;
+      --accent-purple:  #a78bfa;
+      --border-glow:    rgba(0,212,255,0.22);
+      --text-primary:   #e8f4fd;
+      --text-secondary: #7a9bb5;
+      --grid-color:     rgba(0,212,255,0.05);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Scanlines ── */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,0,0,0.04) 2px, rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      z-index: 9999;
+    }
+
+    /* ── Grid background ── */
+    @keyframes gridScroll {
+      0%   { background-position: 0 0; }
+      100% { background-position: 60px 60px; }
+    }
+
+    .grid-bg {
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(var(--grid-color) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid-color) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: gridScroll 14s linear infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .vignette {
+      position: fixed;
+      inset: 0;
+      background: radial-gradient(ellipse at top, transparent 50%, rgba(5,8,16,0.5) 100%);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    /* ── Page ── */
+    .page {
+      position: relative;
+      z-index: 10;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── TOP BAR ── */
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 0 18px;
+      border-bottom: 1px solid rgba(0,212,255,0.12);
+      margin-bottom: 36px;
+      gap: 16px;
+    }
+
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border: 1px solid rgba(0,212,255,0.18);
+      padding: 8px 14px;
+      border-radius: 2px;
+      transition: border-color 0.2s, color 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .back-btn:hover {
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      box-shadow: 0 0 14px rgba(0,212,255,0.15);
+    }
+
+    .bar-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: clamp(16px, 3vw, 26px);
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-primary);
+      text-shadow: 0 0 20px rgba(0,212,255,0.2);
+      text-align: center;
+      flex: 1;
+    }
+
+    .title-cyan { color: var(--accent-cyan); }
+
+    /* ── SECTIONS ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .section {
+      margin-bottom: 44px;
+      animation: fadeUp 0.55s ease-out both;
+    }
+
+    .section-hdr {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+
+    .section-title {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 9px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      white-space: nowrap;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, rgba(0,212,255,0.2), transparent);
+    }
+
+    /* ── ADD FORM CARD ── */
+    .form-card {
+      background: rgba(13,20,40,0.88);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--border-glow);
+      border-radius: 3px;
+      padding: 32px 36px 36px;
+      position: relative;
+      box-shadow:
+        0 0 50px rgba(0,212,255,0.07),
+        0 0 100px rgba(0,212,255,0.03),
+        inset 0 0 50px rgba(0,0,0,0.25);
+    }
+
+    /* Corner brackets */
+    .cb { position: absolute; width: 14px; height: 14px; border-color: var(--accent-cyan); border-style: solid; opacity: 0.9; }
+    .cb-tl { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+    .cb-tr { top: -1px; right: -1px; border-width: 2px 2px 0 0; }
+    .cb-bl { bottom: -1px; left: -1px; border-width: 0 0 2px 2px; }
+    .cb-br { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px 24px;
+    }
+
+    .field { margin-bottom: 0; }
+    .field-full { grid-column: 1 / -1; }
+
+    .field-label {
+      display: block;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 8.5px;
+      font-weight: 600;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 9px;
+    }
+
+    .field-optional {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      color: rgba(122,155,181,0.45);
+      letter-spacing: 0;
+      text-transform: none;
+      margin-left: 4px;
+    }
+
+    .input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    @keyframes dotBlink {
+      0%, 100% { opacity: 1; }
+      50%       { opacity: 0.15; }
+    }
+
+    .pulse-dot {
+      position: absolute;
+      left: 13px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent-cyan);
+      animation: dotBlink 1.6s ease-in-out infinite;
+      z-index: 2;
+      flex-shrink: 0;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+      width: 100%;
+      padding: 12px 14px 12px 32px;
+      background: rgba(5,8,16,0.8);
+      border: 1px solid rgba(0,212,255,0.12);
+      border-bottom: 1.5px solid rgba(0,212,255,0.4);
+      border-radius: 2px 2px 0 0;
+      color: var(--text-primary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 13px;
+      outline: none;
+      caret-color: var(--accent-cyan);
+      transition: border-color 0.2s, box-shadow 0.2s;
+      -moz-appearance: textfield;
+    }
+
+    input[type="text"]:focus,
+    input[type="number"]:focus {
+      border-color: rgba(0,212,255,0.35);
+      border-bottom-color: var(--accent-cyan);
+      box-shadow: 0 6px 24px rgba(0,212,255,0.12), inset 0 0 20px rgba(0,212,255,0.02);
+    }
+
+    input[type="text"]::placeholder,
+    input[type="number"]::placeholder {
+      color: rgba(122,155,181,0.35);
+      font-size: 12px;
+    }
+
+    input[type="number"]::-webkit-inner-spin-button,
+    input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+    .select-wrap { position: relative; }
+
+    .select-wrap::after {
+      content: '▼';
+      position: absolute;
+      right: 13px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 8px;
+      color: var(--accent-cyan);
+      pointer-events: none;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px 36px 12px 13px;
+      background: rgba(5,8,16,0.8);
+      border: 1px solid rgba(0,212,255,0.18);
+      border-radius: 2px;
+      color: var(--text-primary);
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      letter-spacing: 0.5px;
+      outline: none;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      cursor: pointer;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    select:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 18px rgba(0,212,255,0.1);
+    }
+
+    select option { background: #0a0f1e; color: var(--text-primary); }
+
+    .card-divider {
+      width: 100%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(0,212,255,0.2) 30%, rgba(0,212,255,0.2) 70%, transparent);
+      margin: 24px 0 22px;
+    }
+
+    @keyframes scanAnim {
+      0%   { top: -80%; }
+      100% { top: 160%; }
+    }
+
+    .add-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, rgba(0,185,228,0.92) 0%, rgba(0,90,200,0.92) 100%);
+      border: 1px solid var(--accent-cyan);
+      border-radius: 2px;
+      color: #020609;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 3.5px;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 0 28px rgba(0,212,255,0.18);
+      transition: box-shadow 0.25s, transform 0.1s;
+    }
+
+    .add-btn::before {
+      content: '';
+      position: absolute;
+      left: 0; width: 100%; height: 50%;
+      background: linear-gradient(transparent, rgba(255,255,255,0.18), transparent);
+      top: -80%;
+    }
+
+    .add-btn:hover { box-shadow: 0 0 50px rgba(0,212,255,0.35), 0 0 100px rgba(0,212,255,0.15); }
+    .add-btn:hover::before { animation: scanAnim 0.45s ease-in-out; }
+    .add-btn:active { transform: scale(0.985); }
+
+    /* ── WATCHLIST TABLE ── */
+    @keyframes barExpand {
+      from { width: 0; }
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 3px;
+      border: 1px solid rgba(0,212,255,0.1);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 700px;
+    }
+
+    thead th {
+      padding: 11px 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 7.5px;
+      font-weight: 600;
+      letter-spacing: 1.8px;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      text-align: left;
+      background: rgba(10,15,30,0.9);
+      border-bottom: 1px solid rgba(0,212,255,0.12);
+      white-space: nowrap;
+    }
+
+    @keyframes rowSlide {
+      from { opacity: 0; transform: translateX(-14px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    tbody tr {
+      border-bottom: 1px solid rgba(0,212,255,0.05);
+      animation: rowSlide 0.38s ease-out both;
+      cursor: default;
+      transition: background 0.15s;
+    }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(0,212,255,0.04); }
+
+    tbody td {
+      padding: 12px 14px;
+      font-size: 13px;
+      vertical-align: middle;
+    }
+
+    .name-cell {
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-primary);
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .ticker-cell {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 11px;
+      color: rgba(122,155,181,0.7);
+      background: rgba(0,0,0,0.25);
+      padding: 3px 7px;
+      border-radius: 2px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    .sector-tag {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 9px;
+      letter-spacing: 0.8px;
+      padding: 3px 8px;
+      border-radius: 2px;
+      text-transform: lowercase;
+      white-space: nowrap;
+    }
+    .sector-energy                    { background: rgba(255,184,0,0.1);    color: #ffb800; }
+    .sector-semiconductors            { background: rgba(0,212,255,0.1);    color: #00d4ff; }
+    .sector-shipping                  { background: rgba(99,179,237,0.1);   color: #63b3ed; }
+    .sector-agriculture               { background: rgba(0,255,136,0.1);    color: #00ff88; }
+    .sector-defence                   { background: rgba(255,61,61,0.1);    color: #ff6b6b; }
+    .sector-consumer-goods            { background: rgba(167,139,250,0.1);  color: #a78bfa; }
+    .sector-mining-and-metals         { background: rgba(237,137,54,0.1);   color: #ed8936; }
+    .sector-fertilizers-and-chemicals { background: rgba(245,208,54,0.1);   color: #e8d043; }
+
+    .price-cell {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--accent-green);
+    }
+
+    .notes-cell {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: var(--text-secondary);
+      max-width: 200px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-style: italic;
+    }
+
+    .date-cell {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 10px;
+      color: rgba(122,155,181,0.55);
+      white-space: nowrap;
+    }
+
+    .remove-btn {
+      background: rgba(255,61,61,0.08);
+      border: 1px solid rgba(255,61,61,0.22);
+      color: var(--accent-red);
+      width: 28px;
+      height: 28px;
+      border-radius: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.15s, border-color 0.15s;
+      line-height: 1;
+    }
+    .remove-btn:hover {
+      background: rgba(255,61,61,0.2);
+      border-color: rgba(255,61,61,0.5);
+    }
+
+    .empty-table {
+      padding: 40px 24px;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      background: rgba(13,20,40,0.6);
+      border: 1px solid rgba(0,212,255,0.08);
+      border-radius: 3px;
+    }
+
+    /* ── SIGNAL ANALYSIS TABLE ── */
+    .sig-cell {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      padding: 4px 10px;
+      border-radius: 2px;
+      border: 1px solid;
+      white-space: nowrap;
+    }
+    .sig-up      { color: var(--accent-green);   background: rgba(0,255,136,0.07);   border-color: rgba(0,255,136,0.3); box-shadow: 0 0 10px rgba(0,255,136,0.1); }
+    .sig-down    { color: var(--accent-red);      background: rgba(255,61,61,0.07);   border-color: rgba(255,61,61,0.3); box-shadow: 0 0 10px rgba(255,61,61,0.1); }
+    .sig-neutral { color: var(--text-secondary);  background: rgba(122,155,181,0.06); border-color: rgba(122,155,181,0.25); }
+
+    .score-cell { font-family: 'IBM Plex Mono', monospace; font-size: 14px; font-weight: 500; }
+    .score-pos  { color: var(--accent-green); }
+    .score-neg  { color: var(--accent-red); }
+    .score-zero { color: var(--text-secondary); }
+
+    .conf-dots { display: flex; gap: 4px; align-items: center; }
+    .cdot { width: 7px; height: 7px; border-radius: 50%; background: rgba(122,155,181,0.2); }
+    .cdot-filled-high   { background: var(--accent-amber); }
+    .cdot-filled-medium { background: rgba(255,184,0,0.7); }
+    .cdot-filled-low    { background: rgba(255,184,0,0.4); }
+
+    .driver-cell { font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: var(--text-secondary); }
+
+    /* ── SIGNAL HIGHLIGHT — watched companies ── */
+    tr.watched-row { background: rgba(0,212,255,0.025); }
+    tr.watched-row:hover { background: rgba(0,212,255,0.055); }
+
+    .watched-badge {
+      display: inline-block;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 8px;
+      color: var(--accent-cyan);
+      border: 1px solid rgba(0,212,255,0.3);
+      background: rgba(0,212,255,0.08);
+      padding: 2px 6px;
+      border-radius: 2px;
+      margin-left: 6px;
+      vertical-align: middle;
+      letter-spacing: 0.8px;
+    }
+
+    .no-signals {
+      padding: 40px 24px;
+      text-align: center;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 12px;
+      color: var(--text-secondary);
+      letter-spacing: 1px;
+      background: rgba(13,20,40,0.6);
+      border: 1px solid rgba(0,212,255,0.08);
+      border-radius: 3px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 720px) {
+      .top-bar { flex-wrap: wrap; }
+      .bar-title { font-size: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field-full { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+<div class="vignette"></div>
+
+<div class="page">
+
+  <!-- ═══════════════════════════════════
+       TOP BAR
+  ════════════════════════════════════ -->
+  <div class="top-bar">
+    <a class="back-btn" href="/vaibhav">← COMMAND CENTER</a>
+    <div class="bar-title">MY &nbsp;<span class="title-cyan">WATCHLIST</span></div>
+    <div style="width:130px;flex-shrink:0;"></div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       ADD COMPANY FORM
+  ════════════════════════════════════ -->
+  <div class="section" style="animation-delay:0.05s;">
+    <div class="section-hdr">
+      <span class="section-title">// Add Company to Watchlist</span>
+      <div class="section-line"></div>
+    </div>
+
+    <div class="form-card">
+      <span class="cb cb-tl"></span>
+      <span class="cb cb-tr"></span>
+      <span class="cb cb-bl"></span>
+      <span class="cb cb-br"></span>
+
+      <form action="/vaibhav/add" method="POST" autocomplete="off">
+        <div class="form-grid">
+
+          <div class="field">
+            <label class="field-label" for="name">// Company Name</label>
+            <div class="input-wrap">
+              <span class="pulse-dot"></span>
+              <input type="text" id="name" name="name"
+                     placeholder="e.g. ExxonMobil, TSMC, Lockheed"
+                     required>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="ticker">// Ticker Symbol</label>
+            <div class="input-wrap">
+              <span class="pulse-dot"></span>
+              <input type="text" id="ticker" name="ticker"
+                     placeholder="e.g. XOM, TSM, LMT"
+                     required
+                     oninput="this.value=this.value.toUpperCase()">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="sector">// Sector</label>
+            <div class="select-wrap">
+              <select id="sector" name="sector" required>
+                {% for s in sectors %}
+                <option value="{{ s }}">{{ s }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="field-label" for="buy_price">// Buy Price &nbsp;<span class="field-optional">(optional)</span></label>
+            <div class="input-wrap">
+              <span class="pulse-dot"></span>
+              <input type="number" id="buy_price" name="buy_price"
+                     placeholder="e.g. 124.50"
+                     step="0.01" min="0">
+            </div>
+          </div>
+
+          <div class="field field-full">
+            <label class="field-label" for="notes">// Notes &nbsp;<span class="field-optional">(optional)</span></label>
+            <div class="input-wrap">
+              <span class="pulse-dot"></span>
+              <input type="text" id="notes" name="notes"
+                     placeholder="e.g. watching for Iran escalation, supply chain risk">
+            </div>
+          </div>
+
+        </div>
+
+        <div class="card-divider"></div>
+        <button type="submit" class="add-btn">+ ADD TO WATCHLIST</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════
+       CURRENT WATCHLIST TABLE
+  ════════════════════════════════════ -->
+  <div class="section" style="animation-delay:0.1s;">
+    <div class="section-hdr">
+      <span class="section-title">// Current Watchlist &nbsp;({{ watchlist | length }} compan{% if watchlist | length == 1 %}y{% else %}ies{% endif %})</span>
+      <div class="section-line"></div>
+    </div>
+
+    {% if watchlist %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Ticker</th>
+            <th>Sector</th>
+            <th>Buy Price</th>
+            <th>Notes</th>
+            <th>Added</th>
+            <th>Remove</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for company in watchlist %}
+          <tr style="animation-delay:{{ loop.index0 * 0.045 }}s;">
+            <td><div class="name-cell" title="{{ company.name }}">{{ company.name }}</div></td>
+            <td><span class="ticker-cell">{{ company.ticker }}</span></td>
+            <td>
+              <span class="sector-tag sector-{{ company.sector | replace(' ', '-') | lower }}">{{ company.sector }}</span>
+            </td>
+            <td>
+              {% if company.buy_price %}
+                <span class="price-cell">${{ company.buy_price }}</span>
+              {% else %}
+                <span style="color:rgba(122,155,181,0.35);font-family:'IBM Plex Mono',monospace;font-size:11px;">—</span>
+              {% endif %}
+            </td>
+            <td>
+              <span class="notes-cell" title="{% if company.notes %}{{ company.notes }}{% endif %}">
+                {% if company.notes %}{{ company.notes }}{% else %}<span style="opacity:0.3;">—</span>{% endif %}
+              </span>
+            </td>
+            <td><span class="date-cell">{{ company.added_date }}</span></td>
+            <td>
+              <a class="remove-btn" href="/vaibhav/remove/{{ company.ticker }}" title="Remove {{ company.name }}">×</a>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-table">
+      ◈ &nbsp;Your watchlist is empty. Add companies using the form above.
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- ═══════════════════════════════════
+       WATCHLIST SIGNAL ANALYSIS
+  ════════════════════════════════════ -->
+  {% if watchlist %}
+  <div class="section" style="animation-delay:0.15s;">
+    <div class="section-hdr">
+      <span class="section-title">// Watchlist Signal Analysis &nbsp;(your companies only)</span>
+      <div class="section-line"></div>
+    </div>
+
+    {% if watchlist_signals %}
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Signal</th>
+            <th>Score</th>
+            <th>Conf</th>
+            <th>Driver</th>
+            <th>Company</th>
+            <th>Sector</th>
+            <th>Ticker</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for c in watchlist_signals %}
+          <tr class="watched-row" style="animation-delay:{{ loop.index0 * 0.05 }}s;">
+            <td>
+              {% if c.signal == 'UP' %}<span class="sig-cell sig-up">▲ UP</span>
+              {% elif c.signal == 'DOWN' %}<span class="sig-cell sig-down">▼ DOWN</span>
+              {% else %}<span class="sig-cell sig-neutral">◆ NEUTRAL</span>{% endif %}
+            </td>
+            <td>
+              <span class="score-cell {% if c.final_score > 0 %}score-pos{% elif c.final_score < 0 %}score-neg{% else %}score-zero{% endif %}">
+                {{ "%+.2f" | format(c.final_score) }}
+              </span>
+            </td>
+            <td>
+              <div class="conf-dots">
+                {% if c.confidence == 'high' %}
+                  <span class="cdot cdot-filled-high"></span><span class="cdot cdot-filled-high"></span><span class="cdot cdot-filled-high"></span>
+                {% elif c.confidence == 'medium' %}
+                  <span class="cdot cdot-filled-medium"></span><span class="cdot cdot-filled-medium"></span><span class="cdot"></span>
+                {% else %}
+                  <span class="cdot cdot-filled-low"></span><span class="cdot"></span><span class="cdot"></span>
+                {% endif %}
+              </div>
+            </td>
+            <td><span class="driver-cell">{{ c.signal_driver | replace('_', ' ') }}</span></td>
+            <td>
+              <div class="name-cell" title="{{ c.name }}">
+                {{ c.name }}<span class="watched-badge">WATCHED</span>
+              </div>
+            </td>
+            <td>
+              <span class="sector-tag sector-{{ c.sector | replace(' ', '-') | lower }}">{{ c.sector }}</span>
+            </td>
+            <td><span class="ticker-cell">{{ c.ticker }}</span></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="no-signals">
+      ◈ &nbsp;None of your watchlist companies matched the current geopolitical scans.
+      <br><br>
+      <span style="font-size:10px;opacity:0.6;">
+        This may mean your companies are not in the signal engine's database, or they are not affected by today's top events.
+      </span>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <!-- ─── Back link ─── -->
+  <a class="back-btn" href="/vaibhav">← BACK TO COMMAND CENTER</a>
+
+</div><!-- /page -->
+
+<script>
+  /* Count-up animation */
+  function animateCount(el) {
+    const target   = parseFloat(el.dataset.target) || 0;
+    const isInt    = el.dataset.int === 'true';
+    const prefix   = el.dataset.prefix || '';
+    const duration = 1400;
+    const startTs  = performance.now();
+    function step(now) {
+      const elapsed  = now - startTs;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased    = 1 - Math.pow(1 - progress, 3);
+      const val      = target * eased;
+      el.textContent = prefix + (isInt ? Math.round(val) : val.toFixed(1));
+      if (progress < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (!entry.isIntersecting) return;
+      io.unobserve(entry.target);
+      entry.target.querySelectorAll('.count-num').forEach(animateCount);
+    });
+  }, { threshold: 0.15 });
+  document.querySelectorAll('.section').forEach(s => io.observe(s));
+</script>
+
+</body>
+</html>
