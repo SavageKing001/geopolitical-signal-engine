@@ -1,0 +1,16 @@
+services:
+  app:
+    build: .
+    ports:
+      - "5000:5000"
+    command: python dashboard/app.py
+    env_file:
+      - .env
+
+  vaibhav:
+    build: .
+    ports:
+      - "5001:5001"
+    command: python dashboard/vaibhav.py
+    env_file:
+      - .env

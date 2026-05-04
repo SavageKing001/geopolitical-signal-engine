@@ -6,7 +6,10 @@
       "Bash(python -m sentiment_layer.reddit_scraper)",
       "Bash(python -m signal_engine.scorer)",
       "Bash(python -m gold_module.gold_signal)",
-      "Bash(python main.py)"
+      "Bash(python main.py)",
+      "Bash(Get-ChildItem -Path \"c:\\\\Users\\\\saiva\\\\projects\\\\geopolitical-signal-engine\" -Recurse -Force)",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(Sort-Object)"
     ]
   }
 }

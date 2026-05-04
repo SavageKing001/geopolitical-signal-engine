@@ -1,9 +1,17 @@
+import os
+import sys
+from dotenv import load_dotenv
 from .verifier import filter_articles
 from .tagger import tag_all
 from newsapi import NewsApiClient
 
-# Your API key
-API_KEY = "fca8e89996a645d9b281559309bc2793"
+load_dotenv()
+
+API_KEY = os.getenv("NEWSAPI_KEY")
+
+if API_KEY is None:
+    print("ERROR: NEWSAPI_KEY not found in .env file")
+    sys.exit(1)
 
 # Connect to NewsAPI
 newsapi = NewsApiClient(api_key=API_KEY)
