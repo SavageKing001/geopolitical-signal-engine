@@ -1648,5 +1648,115 @@
     "market_cap_category": "small",
     "geopolitical_sensitivity": "medium — Indian state fertilizer company whose natural gas feedstock costs are directly shaped by India-Russia energy trade relations and whose output is tied to Indian government urea subsidy policies",
     "description": "Indian public sector company producing nitrogen fertilizers, acetic acid, and industrial chemicals in Gujarat, with gas supply partly sourced from Russia through long-term arrangements."
+  },
+  {
+    "name": "Garden Reach Shipbuilders & Engineers",
+    "ticker": "GRSE.NS",
+    "sector": "defence",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Middle East", "Southeast Asia"],
+    "supply_chain_dependencies": ["India", "UK", "Germany"],
+    "market_cap_category": "small",
+    "geopolitical_sensitivity": "high — primary Indian Navy shipbuilder, directly benefits from India-Pakistan tension and Indian defence budget increases; any escalation in the subcontinent or Indo-Pacific drives order flow and valuations",
+    "description": "Indian state-owned shipbuilder and the primary constructor of surface warships for the Indian Navy, producing frigates, corvettes, and survey vessels at its Kolkata facility."
+  },
+  {
+    "name": "Mazagon Dock Shipbuilders",
+    "ticker": "MAZDOCK.NS",
+    "sector": "defence",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India"],
+    "supply_chain_dependencies": ["India", "France", "Germany"],
+    "market_cap_category": "small",
+    "geopolitical_sensitivity": "high — builds submarines and destroyers for the Indian Navy, rises on any India-China or India-Pakistan escalation; France supply chain dependency creates secondary sensitivity to European defence export controls",
+    "description": "India's premier defence shipyard building Scorpene-class submarines and destroyers for the Indian Navy, with a long-term pipeline of high-value warship contracts."
+  },
+  {
+    "name": "Hindustan Aeronautics Limited",
+    "ticker": "HAL.NS",
+    "sector": "defence",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Southeast Asia"],
+    "supply_chain_dependencies": ["India", "Russia", "France", "USA"],
+    "market_cap_category": "mid",
+    "geopolitical_sensitivity": "high — India's primary military aircraft manufacturer is exposed to Russia sanctions through supply chain dependencies for engine components and avionics; any India-China or India-Pakistan conflict directly accelerates HAL's order pipeline and government budget allocation",
+    "description": "India's largest aerospace and defence public sector company, producing military aircraft, helicopters, jet engines, and avionics for the Indian Air Force, Army, and Navy."
+  },
+  {
+    "name": "Bharat Electronics Limited",
+    "ticker": "BEL.NS",
+    "sector": "defence",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Middle East", "Africa"],
+    "supply_chain_dependencies": ["India", "Israel", "USA"],
+    "market_cap_category": "mid",
+    "geopolitical_sensitivity": "high — makes radar, sonar, and electronic warfare systems for India's armed forces; benefits from any regional conflict near India; Israel supply chain creates secondary exposure to Middle East conflict and potential export restrictions on Israeli defence components",
+    "description": "Indian state-owned defence electronics company producing radar systems, sonar, electronic warfare equipment, and communications systems for the Indian military and export customers."
+  },
+  {
+    "name": "Bharat Dynamics Limited",
+    "ticker": "BDL.NS",
+    "sector": "defence",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India"],
+    "supply_chain_dependencies": ["India", "Russia", "France"],
+    "market_cap_category": "small",
+    "geopolitical_sensitivity": "high — manufactures missiles and torpedoes for Indian armed forces; directly benefits from regional conflict signals near India; Russian supply chain dependency for missile components creates acute secondary risk from Russia sanctions escalation",
+    "description": "Indian state-owned missile manufacturer producing anti-tank guided missiles, underwater weapons, and rocket systems for the Indian Army, Navy, and Air Force under co-production agreements with Russia and France."
+  },
+  {
+    "name": "Shipping Corporation of India",
+    "ticker": "SCI.NS",
+    "sector": "shipping",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Middle East", "Southeast Asia", "Africa"],
+    "supply_chain_dependencies": ["India", "China", "South Korea"],
+    "market_cap_category": "small",
+    "geopolitical_sensitivity": "high — India's largest state-owned shipping company is directly affected by Middle East conflict and Hormuz strait disruptions; carries Indian crude oil imports from the Gulf, making it the most direct Indian equity proxy for any Iran-related escalation or Red Sea crisis",
+    "description": "India's national carrier and largest state-owned shipping company operating tankers, bulk carriers, and container vessels on international routes, with heavy Middle East crude oil trade exposure."
+  },
+  {
+    "name": "Cochin Shipyard",
+    "ticker": "COCHINSHIP.NS",
+    "sector": "defence",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Europe", "Middle East"],
+    "supply_chain_dependencies": ["India", "South Korea", "Germany"],
+    "market_cap_category": "small",
+    "geopolitical_sensitivity": "high — builds and repairs naval and commercial vessels; benefits from Indian naval expansion driven by China threat perception; growing Middle East ship repair demand driven by conflict-induced vessel damage makes it a dual beneficiary of Indo-Pacific and Gulf tensions",
+    "description": "India's largest shipyard by dock capacity, building aircraft carriers, naval vessels, and commercial ships while operating India's largest ship repair complex in Kochi."
+  },
+  {
+    "name": "Gujarat Pipavav Port",
+    "ticker": "GPPL.NS",
+    "sector": "shipping",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Middle East", "Africa"],
+    "supply_chain_dependencies": ["India", "UAE"],
+    "market_cap_category": "small",
+    "geopolitical_sensitivity": "high — private container port handling India-Middle East trade routes; directly affected by Red Sea Houthi attacks and Hormuz disruptions as cargo is rerouted or volumes shift; APM Terminals ownership links it to global container trade dynamics",
+    "description": "India's first private sector major port, handling container and LPG cargo on the Gujarat coast with direct exposure to India-Middle East and India-Africa trade lane disruptions."
+  },
+  {
+    "name": "Adani Ports and SEZ",
+    "ticker": "ADANIPORTS.NS",
+    "sector": "shipping",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Middle East", "Australia", "Africa"],
+    "supply_chain_dependencies": ["India", "UAE", "Australia"],
+    "market_cap_category": "mid",
+    "geopolitical_sensitivity": "high — India's largest port operator with Middle East and Indian Ocean exposure; affected by any disruption to Indian Ocean trade routes; Australian coal and resource cargo dependency creates secondary sensitivity to Australia-China trade tensions",
+    "description": "India's largest integrated port and logistics company operating 13 domestic ports plus overseas facilities in Israel, Sri Lanka, Tanzania, and Myanmar, making it the leading proxy for Indian Ocean trade flows."
+  },
+  {
+    "name": "JSW Infrastructure",
+    "ticker": "JSWINFRA.NS",
+    "sector": "shipping",
+    "headquarters_country": "India",
+    "revenue_exposure": ["India", "Middle East"],
+    "supply_chain_dependencies": ["India", "UAE", "Australia"],
+    "market_cap_category": "small",
+    "geopolitical_sensitivity": "medium — fast-growing Indian port operator handling coal and steel cargo; exposed to Australia-China trade tensions which redirect Australian coal to India through JSW-operated terminals; Middle East energy flows through its Gujarat facilities create secondary Hormuz sensitivity",
+    "description": "Fast-growing Indian port and marine logistics company handling coal, iron ore, and container cargo at terminals across India's western and eastern coastlines."
   }
 ]
