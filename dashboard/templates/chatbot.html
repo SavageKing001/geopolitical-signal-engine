@@ -6,1152 +6,692 @@
 <title>Geopolitical Signal Bot</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-  :root {
-    --gold:        #C9A84C;
-    --gold-dim:    #8a6f2e;
-    --bg:          #080808;
-    --bg-card:     #111111;
-    --bg-card2:    #181818;
-    --bg-hover:    #1c1c1c;
-    --border:      #222222;
-    --border-gold: rgba(201,168,76,0.35);
-    --text:        #e8e6e0;
-    --text-dim:    #7a7872;
-    --text-mid:    #a09c94;
-    --up:          #4caf7d;
-    --down:        #e05a5a;
-    --neutral:     #6b6b6b;
-    --sidebar-w:   280px;
-  }
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  html, body { height: 100%; overflow: hidden; }
-  body {
-    background: var(--bg);
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    display: flex;
-  }
+:root {
+  --gold:       #C9A84C;
+  --gold-dim:   #8a6f2e;
+  --gold-bg:    rgba(201,168,76,0.08);
+  --gold-border:rgba(201,168,76,0.28);
+  --bg:         #080808;
+  --bg-card:    #101010;
+  --bg-card2:   #161616;
+  --bg-hover:   #1a1a1a;
+  --border:     #1e1e1e;
+  --text:       #e6e4de;
+  --text-dim:   #6a6760;
+  --text-mid:   #9c9890;
+  --up:         #4caf7d;
+  --up-bg:      rgba(76,175,125,0.10);
+  --up-border:  rgba(76,175,125,0.28);
+  --down:       #e05a5a;
+  --down-bg:    rgba(224,90,90,0.10);
+  --down-border:rgba(224,90,90,0.28);
+  --neutral:    #5a5a5a;
+  --sidebar-w:  260px;
+  --radius:     4px;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;display:flex}
+::-webkit-scrollbar{width:3px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
 
-  /* ─── SCROLLBAR ─────────────────────────────────────────────── */
-  ::-webkit-scrollbar { width: 4px; }
-  ::-webkit-scrollbar-track { background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+/* ── SIDEBAR ─────────────────────────────────────────────────────── */
+#sidebar{
+  width:var(--sidebar-w);min-width:var(--sidebar-w);height:100vh;
+  background:var(--bg-card);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.sb-header{padding:24px 20px 18px;border-bottom:1px solid var(--gold-border)}
+.sb-logo{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;
+         color:var(--gold);letter-spacing:.14em;text-transform:uppercase}
+.sb-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);
+        margin-top:4px;letter-spacing:.08em}
+.sb-section{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;
+            text-transform:uppercase;color:var(--text-dim);
+            padding:14px 20px 8px;border-bottom:1px solid var(--border)}
+#wl-sidebar{flex:1;overflow-y:auto;padding:4px 0}
+.wl-row{display:flex;align-items:center;justify-content:space-between;
+        padding:8px 16px;border-left:2px solid transparent;
+        cursor:pointer;transition:all .15s;gap:8px}
+.wl-row:hover{background:var(--bg-hover);border-left-color:var(--gold-dim)}
+.wl-info{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+.wl-name{font-size:12px;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wl-ticker{font-family:'DM Mono',monospace;font-size:10px;color:var(--gold)}
+.wl-x{background:none;border:none;color:var(--text-dim);cursor:pointer;
+      font-size:13px;padding:2px 5px;border-radius:3px;transition:color .15s,background .15s;line-height:1}
+.wl-x:hover{color:var(--down);background:var(--down-bg)}
+.wl-empty{padding:16px 20px;color:var(--text-dim);font-size:12px;font-style:italic}
+.sb-nav{padding:14px 20px;border-top:1px solid var(--border);display:flex;flex-direction:column;gap:8px}
+.nav-a{font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim);
+       text-decoration:none;letter-spacing:.05em;transition:color .15s}
+.nav-a:hover{color:var(--gold)}
 
-  /* ─── SIDEBAR ────────────────────────────────────────────────── */
-  #sidebar {
-    width: var(--sidebar-w);
-    min-width: var(--sidebar-w);
-    height: 100vh;
-    background: var(--bg-card);
-    border-right: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-  }
-  .sidebar-header {
-    padding: 28px 24px 20px;
-    border-bottom: 1px solid var(--border-gold);
-  }
-  .sidebar-logo {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 700;
-    color: var(--gold);
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-  }
-  .sidebar-subtitle {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-    margin-top: 5px;
-    letter-spacing: 0.08em;
-  }
-  .sidebar-section-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    padding: 16px 24px 10px;
-    border-bottom: 1px solid var(--border);
-  }
-  #watchlist-sidebar {
-    flex: 1;
-    overflow-y: auto;
-    padding: 6px 0;
-  }
-  .watchlist-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 9px 20px;
-    border-left: 2px solid transparent;
-    transition: all 0.15s;
-    cursor: default;
-  }
-  .watchlist-item:hover {
-    background: var(--bg-hover);
-    border-left-color: var(--gold-dim);
-  }
-  .wl-info { display: flex; flex-direction: column; gap: 2px; flex: 1; min-width: 0; }
-  .wl-name {
-    font-size: 12px;
-    color: var(--text);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-  }
-  .wl-ticker {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--gold);
-    letter-spacing: 0.04em;
-  }
-  .wl-remove {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 13px;
-    padding: 2px 4px;
-    border-radius: 3px;
-    transition: color 0.15s, background 0.15s;
-    line-height: 1;
-    flex-shrink: 0;
-  }
-  .wl-remove:hover { color: var(--down); background: rgba(224,90,90,0.1); }
-  .wl-empty {
-    padding: 20px 24px;
-    color: var(--text-dim);
-    font-size: 12px;
-    font-style: italic;
-  }
-  .sidebar-nav {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-  }
-  .nav-link {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--text-dim);
-    text-decoration: none;
-    letter-spacing: 0.05em;
-    transition: color 0.15s;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-  .nav-link:hover { color: var(--gold); }
+/* ── MAIN ────────────────────────────────────────────────────────── */
+#main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;min-width:0}
+#topbar{height:52px;min-height:52px;background:var(--bg-card);border-bottom:1px solid var(--border);
+        display:flex;align-items:center;justify-content:space-between;padding:0 24px}
+.tb-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:600;
+          color:var(--text);letter-spacing:.06em}
+.tb-right{display:flex;align-items:center;gap:12px}
+#clock{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);letter-spacing:.08em}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--up);box-shadow:0 0 5px var(--up);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
 
-  /* ─── MAIN AREA ──────────────────────────────────────────────── */
-  #main {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden;
-  }
+/* ── CHAT ────────────────────────────────────────────────────────── */
+#chat{flex:1;overflow-y:auto;padding:20px 24px 12px;display:flex;flex-direction:column;gap:16px}
+.row{display:flex;gap:9px;max-width:840px}
+.row.usr{align-self:flex-end;flex-direction:row-reverse;max-width:580px}
+.avatar{font-family:'DM Mono',monospace;font-size:8px;color:var(--gold);
+        background:var(--bg-card2);border:1px solid var(--gold-border);border-radius:3px;
+        padding:4px 5px;height:fit-content;margin-top:2px;white-space:nowrap;letter-spacing:.08em}
+.bubble{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);
+        padding:14px 16px;flex:1;min-width:0}
+.row.usr .bubble{background:var(--bg-card2);border-color:var(--border);
+                  font-size:13px;color:var(--text-mid)}
 
-  /* ─── TOP BAR ────────────────────────────────────────────────── */
-  #topbar {
-    height: 56px;
-    min-height: 56px;
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 0 28px;
-  }
-  .topbar-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 16px;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.06em;
-  }
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-  }
-  #clock {
-    font-family: 'DM Mono', monospace;
-    font-size: 12px;
-    color: var(--gold);
-    letter-spacing: 0.08em;
-  }
-  .topbar-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    background: var(--up);
-    box-shadow: 0 0 6px var(--up);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+/* typing */
+.dots{display:flex;align-items:center;gap:4px;padding:3px 0}
+.dots span{width:6px;height:6px;background:var(--gold-dim);border-radius:50%;animation:bounce 1.2s infinite}
+.dots span:nth-child(2){animation-delay:.2s}.dots span:nth-child(3){animation-delay:.4s}
+@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-6px)}}
 
-  /* ─── CHAT AREA ──────────────────────────────────────────────── */
-  #chat-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 24px 28px 16px;
-    display: flex;
-    flex-direction: column;
-    gap: 18px;
-  }
+/* chips */
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:10px}
+.chip{font-family:'DM Mono',monospace;font-size:11px;color:var(--gold);
+      background:var(--bg-card2);border:1px solid var(--gold-border);
+      border-radius:20px;padding:5px 12px;cursor:pointer;transition:all .15s;letter-spacing:.03em}
+.chip:hover{background:var(--gold-border);color:#fff}
 
-  /* ─── MESSAGE ROW ────────────────────────────────────────────── */
-  .msg-row {
-    display: flex;
-    gap: 10px;
-    max-width: 820px;
-  }
-  .msg-row.user-row {
-    align-self: flex-end;
-    flex-direction: row-reverse;
-    max-width: 620px;
-  }
-  .msg-avatar {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    color: var(--gold);
-    letter-spacing: 0.1em;
-    background: var(--bg-card2);
-    border: 1px solid var(--border-gold);
-    border-radius: 4px;
-    padding: 4px 5px;
-    height: fit-content;
-    margin-top: 2px;
-    white-space: nowrap;
-  }
-  .msg-bubble {
-    background: var(--bg-card);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 14px 16px;
-    flex: 1;
-    min-width: 0;
-  }
-  .msg-row.user-row .msg-bubble {
-    background: var(--bg-card2);
-    border-color: var(--border);
-    font-size: 14px;
-    color: var(--text-mid);
-  }
+/* ── INPUT ───────────────────────────────────────────────────────── */
+#input-wrap{border-top:1px solid var(--gold-dim);padding:12px 24px;
+            background:var(--bg-card);display:flex;gap:9px;align-items:center}
+#input{flex:1;background:var(--bg-card2);border:1px solid var(--border);border-radius:var(--radius);
+       color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;
+       padding:10px 14px;outline:none;transition:border-color .2s}
+#input::placeholder{color:var(--text-dim)}
+#input:focus{border-color:var(--gold-dim)}
+#send{background:var(--bg-card2);border:1px solid var(--gold-border);color:var(--gold);
+      font-family:'DM Mono',monospace;font-size:15px;padding:9px 18px;
+      border-radius:var(--radius);cursor:pointer;transition:all .15s}
+#send:hover{background:var(--gold-border);color:#fff}
 
-  /* ─── TYPING INDICATOR ───────────────────────────────────────── */
-  .typing-dots { display: flex; align-items: center; gap: 4px; padding: 4px 0; }
-  .typing-dots span {
-    width: 6px; height: 6px;
-    background: var(--gold-dim);
-    border-radius: 50%;
-    animation: bounce 1.2s infinite;
-  }
-  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
-  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
-  @keyframes bounce { 0%,80%,100%{transform:translateY(0)} 40%{transform:translateY(-6px)} }
+/* ── CARD UTILITIES ──────────────────────────────────────────────── */
+.lbl{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.16em;
+     text-transform:uppercase;color:var(--gold-dim);margin-bottom:8px}
+.msg-text{color:var(--text-mid);font-size:13px;line-height:1.55;margin-bottom:10px}
+.divider{height:1px;background:var(--border);margin:14px 0}
+.pill{display:inline-block;font-family:'DM Mono',monospace;font-size:10px;
+      padding:3px 8px;border-radius:3px;letter-spacing:.04em}
+.pill-sector {background:var(--gold-bg);  color:var(--gold); border:1px solid var(--gold-border)}
+.pill-neutral{background:rgba(90,90,90,.1);color:var(--text-dim);border:1px solid var(--border)}
+.pill-up     {background:var(--up-bg);    color:var(--up);   border:1px solid var(--up-border)}
+.pill-down   {background:var(--down-bg);  color:var(--down); border:1px solid var(--down-border)}
 
-  /* ─── CHIPS ──────────────────────────────────────────────────── */
-  .chips {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 7px;
-    margin-top: 12px;
-  }
-  .chip {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--gold);
-    background: var(--bg-card2);
-    border: 1px solid var(--border-gold);
-    border-radius: 20px;
-    padding: 5px 12px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    letter-spacing: 0.03em;
-  }
-  .chip:hover { background: var(--border-gold); color: #fff; }
+/* ── COMPANY BRIEF — HEADER ─────────────────────────────────────── */
+.co-name{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;
+         color:var(--text);margin-bottom:3px;line-height:1.2}
+.co-ticker{font-family:'DM Mono',monospace;font-size:13px;color:var(--gold);
+           letter-spacing:.06em;margin-bottom:10px}
+.co-meta{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:10px}
+.co-geo{font-style:italic;font-size:12px;color:var(--text-dim);line-height:1.5;
+        border-left:2px solid var(--gold-border);padding-left:10px;margin-bottom:10px}
 
-  /* ─── INPUT AREA ─────────────────────────────────────────────── */
-  #input-area {
-    border-top: 1px solid var(--gold-dim);
-    padding: 14px 28px;
-    background: var(--bg-card);
-    display: flex;
-    gap: 10px;
-    align-items: center;
-  }
-  #msg-input {
-    flex: 1;
-    background: var(--bg-card2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text);
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    padding: 10px 14px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
-  #msg-input::placeholder { color: var(--text-dim); }
-  #msg-input:focus { border-color: var(--gold-dim); }
-  #send-btn {
-    background: var(--bg-card2);
-    border: 1px solid var(--border-gold);
-    color: var(--gold);
-    font-family: 'DM Mono', monospace;
-    font-size: 16px;
-    padding: 9px 18px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.15s, color 0.15s;
-    letter-spacing: 0.05em;
-  }
-  #send-btn:hover { background: var(--border-gold); color: #fff; }
+/* ── COMPANY BRIEF — PRICE ──────────────────────────────────────── */
+.price-main{display:flex;align-items:baseline;gap:12px;margin-bottom:10px}
+.price-val{font-family:'DM Mono',monospace;font-size:26px;color:var(--text);letter-spacing:-.01em}
+.price-chg{font-family:'DM Mono',monospace;font-size:13px;font-weight:500}
+.price-chg.up{color:var(--up)}.price-chg.down{color:var(--down)}.price-chg.flat{color:var(--text-dim)}
+.price-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:8px}
+.pg-cell{background:var(--bg-card2);border:1px solid var(--border);border-radius:3px;padding:6px 8px}
+.pg-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);
+          letter-spacing:.1em;text-transform:uppercase;margin-bottom:2px}
+.pg-val{font-family:'DM Mono',monospace;font-size:12px;color:var(--text-mid)}
+.price-footer{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);
+              letter-spacing:.04em;display:flex;gap:16px;flex-wrap:wrap}
+.price-unavail{font-style:italic;font-size:12px;color:var(--text-dim);padding:8px 0}
 
-  /* ─── CARD COMPONENTS ────────────────────────────────────────── */
-  .card-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--gold-dim);
-    margin-bottom: 10px;
-  }
-  .msg-text {
-    color: var(--text-mid);
-    font-size: 13px;
-    margin-bottom: 12px;
-    line-height: 1.5;
-  }
+/* ── COMPANY BRIEF — SIGNAL ─────────────────────────────────────── */
+.sig-big{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;
+         letter-spacing:.08em;margin-bottom:6px}
+.sig-big.UP    {color:var(--up)  }.sig-big.DOWN{color:var(--down)}.sig-big.NEUTRAL{color:var(--neutral)}
+.sig-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.conf-badge{font-family:'DM Mono',monospace;font-size:10px;padding:3px 8px;
+            border-radius:3px;border:1px solid var(--border);color:var(--text-dim)}
+.sig-reason{font-style:italic;font-size:12px;color:var(--text-mid);
+            line-height:1.6;margin-bottom:10px}
+.event-pills{display:flex;flex-wrap:wrap;gap:5px}
 
-  /* WELCOME CARD */
-  .welcome-greeting {
-    font-family: 'Playfair Display', serif;
-    font-size: 20px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .welcome-sub {
-    font-size: 13px;
-    color: var(--text-mid);
-    margin-bottom: 14px;
-    line-height: 1.5;
-  }
+/* ── COMPANY BRIEF — SENTIMENT ──────────────────────────────────── */
+.sent-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:8px}
+.sent-cell{background:var(--bg-card2);border:1px solid var(--border);
+           border-radius:3px;padding:8px 10px;text-align:center}
+.sent-val{font-family:'DM Mono',monospace;font-size:18px;color:var(--gold);font-weight:500}
+.sent-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--text-dim);
+            letter-spacing:.1em;text-transform:uppercase;margin-top:3px}
+.sent-mood{font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;
+           border-radius:3px;display:inline-block;letter-spacing:.06em}
+.sent-mood.positive{background:var(--up-bg);  color:var(--up);  border:1px solid var(--up-border)}
+.sent-mood.negative{background:var(--down-bg);color:var(--down);border:1px solid var(--down-border)}
+.sent-mood.neutral {background:rgba(90,90,90,.1);color:var(--text-dim);border:1px solid var(--border)}
 
-  /* COMPANY CARD */
-  .company-name {
-    font-family: 'Playfair Display', serif;
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 2px;
-  }
-  .company-ticker {
-    font-family: 'DM Mono', monospace;
-    font-size: 13px;
-    color: var(--gold);
-    letter-spacing: 0.06em;
-    margin-bottom: 12px;
-  }
-  .company-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-bottom: 10px;
-  }
-  .meta-pill {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 3px;
-    letter-spacing: 0.04em;
-  }
-  .pill-sector  { background: rgba(201,168,76,0.12); color: var(--gold); border: 1px solid var(--border-gold); }
-  .pill-hq      { background: rgba(255,255,255,0.04); color: var(--text-mid); border: 1px solid var(--border); }
-  .pill-cap     { background: rgba(255,255,255,0.04); color: var(--text-mid); border: 1px solid var(--border); }
-  .pill-exposure { background: rgba(76,175,125,0.1); color: var(--up); border: 1px solid rgba(76,175,125,0.25); }
-  .pill-supply   { background: rgba(224,90,90,0.08); color: #c47; border: 1px solid rgba(200,100,100,0.2); }
-  .company-geo {
-    font-style: italic;
-    font-size: 12px;
-    color: var(--text-dim);
-    margin: 8px 0 12px;
-    line-height: 1.5;
-    border-left: 2px solid var(--border-gold);
-    padding-left: 10px;
-  }
-  .card-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
-  .card-btn {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    padding: 6px 12px;
-    border-radius: 3px;
-    cursor: pointer;
-    border: 1px solid var(--border-gold);
-    background: transparent;
-    color: var(--gold);
-    letter-spacing: 0.05em;
-    transition: background 0.15s, color 0.15s;
-  }
-  .card-btn:hover { background: var(--border-gold); color: #fff; }
-  .card-btn.primary { background: rgba(201,168,76,0.15); }
+/* ── COMPANY BRIEF — NEWS ───────────────────────────────────────── */
+.news-list{display:flex;flex-direction:column;gap:1px}
+.news-item{padding:9px 10px;border-radius:var(--radius);transition:background .15s}
+.news-item:nth-child(even){background:var(--bg-card2)}
+.news-item:hover{background:var(--bg-hover)}
+.news-title a{font-size:13px;color:var(--text);text-decoration:none;line-height:1.4;
+              display:block;transition:color .15s}
+.news-title a:hover{color:var(--gold)}
+.news-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:3px}
+.no-news{font-style:italic;font-size:12px;color:var(--text-dim);padding:8px 0}
 
-  /* SIGNAL TABLE */
-  .signal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-    gap: 8px;
-  }
-  .signal-keyword {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    color: var(--text);
-  }
-  .psych-row {
-    display: flex;
-    gap: 10px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-  .psych-pill {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    padding: 3px 8px;
-    border-radius: 3px;
-    border: 1px solid var(--border);
-    color: var(--text-mid);
-    letter-spacing: 0.04em;
-  }
-  .sig-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .sig-table th {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    text-align: left;
-    padding: 5px 8px;
-    border-bottom: 1px solid var(--border);
-  }
-  .sig-table td {
-    padding: 7px 8px;
-    border-bottom: 1px solid rgba(34,34,34,0.6);
-    vertical-align: middle;
-  }
-  .sig-table tr:hover td { background: var(--bg-hover); }
-  .sig-table tr.highlight td { background: rgba(201,168,76,0.08); }
-  .sig-table tr.highlight td:first-child { border-left: 2px solid var(--gold); }
-  .sig-up    { color: var(--up);      font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
-  .sig-down  { color: var(--down);    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 500; }
-  .sig-neut  { color: var(--neutral); font-family: 'DM Mono', monospace; font-size: 11px; }
-  .conf-badge {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    padding: 2px 6px;
-    border-radius: 2px;
-    border: 1px solid var(--border);
-    color: var(--text-dim);
-    letter-spacing: 0.05em;
-  }
-  .dist-bar {
-    display: flex;
-    height: 5px;
-    border-radius: 3px;
-    overflow: hidden;
-    margin-top: 12px;
-    gap: 1px;
-  }
-  .dist-up   { background: var(--up);      transition: width 0.5s; }
-  .dist-down { background: var(--down);    transition: width 0.5s; }
-  .dist-neut { background: var(--neutral); transition: width 0.5s; }
-  .dist-label {
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    color: var(--text-dim);
-    display: flex;
-    gap: 14px;
-    margin-top: 6px;
-  }
-  .dist-label span { display: flex; align-items: center; gap: 4px; }
-  .dl-up   { color: var(--up); }
-  .dl-down { color: var(--down); }
-  .dl-neut { color: var(--neutral); }
+/* ── COMPANY BRIEF — EARNINGS ───────────────────────────────────── */
+.earn-table{width:100%;border-collapse:collapse;font-size:12px}
+.earn-table th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;
+               text-transform:uppercase;color:var(--text-dim);text-align:left;
+               padding:5px 8px;border-bottom:1px solid var(--border)}
+.earn-table td{padding:7px 8px;border-bottom:1px solid rgba(30,30,30,.7);font-family:'DM Mono',monospace;font-size:11px}
+.earn-table tr:hover td{background:var(--bg-hover)}
+.beat{color:var(--up)}.miss{color:var(--down)}.in-line{color:var(--text-dim)}
 
-  /* GOLD CARD */
-  .gold-verdict {
-    font-family: 'Playfair Display', serif;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    margin-bottom: 6px;
-  }
-  .gold-verdict.bullish  { color: var(--up); }
-  .gold-verdict.bearish  { color: var(--down); }
-  .gold-verdict.neutral  { color: var(--neutral); }
-  .gold-stats {
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-    color: var(--text-mid);
-    letter-spacing: 0.05em;
-    margin-bottom: 8px;
-  }
-  .gold-reason {
-    font-style: italic;
-    font-size: 12px;
-    color: var(--text-dim);
-    line-height: 1.5;
-    margin-bottom: 12px;
-  }
-  .gold-bar-wrap { display: flex; gap: 4px; margin-top: 10px; }
-  .gold-bar-block {
-    height: 24px;
-    background: linear-gradient(135deg, #c9a84c 0%, #8a6022 100%);
-    border-radius: 2px;
-    flex: 1;
-    opacity: 0.7;
-  }
-  .gold-bar-block:nth-child(even) { opacity: 0.45; }
+/* ── COMPANY BRIEF — ACTIONS ────────────────────────────────────── */
+.actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.btn{font-family:'DM Mono',monospace;font-size:11px;padding:7px 14px;border-radius:3px;
+     cursor:pointer;border:1px solid var(--gold-border);background:transparent;
+     color:var(--gold);letter-spacing:.05em;transition:all .15s}
+.btn:hover{background:var(--gold-border);color:#fff}
+.btn.added{opacity:.5;cursor:default;pointer-events:none;border-color:var(--border);color:var(--text-dim)}
+.btn.secondary{border-color:var(--border);color:var(--text-dim)}
+.btn.secondary:hover{background:var(--bg-hover);color:var(--text);border-color:var(--text-dim)}
 
-  /* WATCHLIST CARD */
-  .wl-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-  .wl-table th {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--text-dim);
-    text-align: left;
-    padding: 5px 8px;
-    border-bottom: 1px solid var(--border);
-  }
-  .wl-table td { padding: 8px 8px; border-bottom: 1px solid rgba(34,34,34,0.6); }
-  .wl-table tr:hover td { background: var(--bg-hover); }
-  .wl-ticker-cell { font-family: 'DM Mono', monospace; color: var(--gold); font-size: 11px; }
-  .wl-remove-cell button {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    cursor: pointer;
-    font-size: 12px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    transition: color 0.15s, background 0.15s;
-  }
-  .wl-remove-cell button:hover { color: var(--down); background: rgba(224,90,90,0.1); }
+/* ── WATCHLIST CARD ──────────────────────────────────────────────── */
+.wl-table{width:100%;border-collapse:collapse;font-size:12px}
+.wl-table th{font-family:'DM Mono',monospace;font-size:9px;letter-spacing:.12em;
+             text-transform:uppercase;color:var(--text-dim);text-align:left;
+             padding:5px 8px;border-bottom:1px solid var(--border)}
+.wl-table td{padding:8px 8px;border-bottom:1px solid rgba(30,30,30,.7)}
+.wl-table tr{cursor:pointer}.wl-table tr:hover td{background:var(--bg-hover)}
+.wl-t{font-family:'DM Mono',monospace;color:var(--gold);font-size:11px}
+.wl-rm{background:none;border:none;color:var(--text-dim);cursor:pointer;
+       font-size:12px;padding:2px 6px;border-radius:3px;transition:all .15s}
+.wl-rm:hover{color:var(--down);background:var(--down-bg)}
 
-  /* CONFIRMATION CARD */
-  .conf-check {
-    font-size: 28px;
-    color: var(--gold);
-    margin-bottom: 8px;
-    font-family: 'DM Mono', monospace;
-  }
-  .conf-title {
-    font-family: 'Playfair Display', serif;
-    font-size: 15px;
-    color: var(--text);
-    margin-bottom: 4px;
-  }
-  .conf-body { font-size: 12px; color: var(--text-dim); }
+/* ── CONFIRMATION ────────────────────────────────────────────────── */
+.conf-icon{font-size:26px;margin-bottom:6px}
+.conf-title{font-family:'Playfair Display',serif;font-size:15px;color:var(--text);margin-bottom:4px}
+.conf-body{font-size:12px;color:var(--text-dim)}
 
-  /* SCAN RESULTS */
-  .scan-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 8px;
-    margin-bottom: 12px;
-  }
-  .scan-region-card {
-    background: var(--bg-card2);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    padding: 10px 12px;
-  }
-  .scan-region-name {
-    font-family: 'DM Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 4px;
-  }
-  .scan-keyword {
-    font-size: 12px;
-    color: var(--text-mid);
-    margin-bottom: 6px;
-    font-style: italic;
-  }
-  .scan-counts {
-    display: flex;
-    gap: 8px;
-    font-family: 'DM Mono', monospace;
-    font-size: 11px;
-  }
-  .sc-up   { color: var(--up); }
-  .sc-down { color: var(--down); }
-  .sc-neut { color: var(--neutral); }
-  .scan-gold-badge {
-    margin-top: 6px;
-    font-family: 'DM Mono', monospace;
-    font-size: 10px;
-    padding: 2px 6px;
-    border-radius: 3px;
-    display: inline-block;
-  }
-  .scan-gold-badge.up   { background: rgba(76,175,125,0.15); color: var(--up); }
-  .scan-gold-badge.down { background: rgba(224,90,90,0.12);  color: var(--down); }
-  .scan-gold-badge.neutral { background: rgba(107,107,107,0.15); color: var(--neutral); }
+/* ── WELCOME ─────────────────────────────────────────────────────── */
+.welcome-h{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;
+           color:var(--text);margin-bottom:4px}
+.welcome-sub{font-size:13px;color:var(--text-mid);line-height:1.55;margin-bottom:14px}
 
-  /* HELP CARD */
-  .help-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 7px;
-    margin-top: 10px;
-  }
-  .help-chip {
-    font-size: 12px;
-    color: var(--text-mid);
-    background: var(--bg-card2);
-    border: 1px solid var(--border);
-    border-radius: 3px;
-    padding: 8px 10px;
-    cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
-    line-height: 1.4;
-  }
-  .help-chip:hover { border-color: var(--gold-dim); color: var(--text); }
+/* ── HELP ────────────────────────────────────────────────────────── */
+.help-grid{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:10px}
+.help-item{font-size:12px;color:var(--text-mid);background:var(--bg-card2);
+           border:1px solid var(--border);border-radius:3px;padding:9px 11px;
+           cursor:pointer;transition:border-color .15s,color .15s;line-height:1.4}
+.help-item:hover{border-color:var(--gold-dim);color:var(--text)}
 </style>
 </head>
 <body>
 
-<!-- ── SIDEBAR ──────────────────────────────────────────────────── -->
+<!-- SIDEBAR -->
 <div id="sidebar">
-  <div class="sidebar-header">
-    <div class="sidebar-logo">Signal Bot</div>
-    <div class="sidebar-subtitle">Geopolitical Signal Engine · v2</div>
+  <div class="sb-header">
+    <div class="sb-logo">Signal Bot</div>
+    <div class="sb-sub">Single-company intelligence · v3</div>
   </div>
-  <div class="sidebar-section-label">Watchlist</div>
-  <div id="watchlist-sidebar">
-    <div class="wl-empty">Loading watchlist…</div>
-  </div>
-  <div class="sidebar-nav">
-    <a href="http://localhost:5000" class="nav-link" target="_blank">→ Main Dashboard</a>
-    <a href="http://localhost:5001/vaibhav" class="nav-link" target="_blank">→ Command Center</a>
+  <div class="sb-section">Watchlist</div>
+  <div id="wl-sidebar"><div class="wl-empty">Loading…</div></div>
+  <div class="sb-nav">
+    <a class="nav-a" href="http://localhost:5000" target="_blank">→ Main Dashboard</a>
+    <a class="nav-a" href="http://localhost:5001/vaibhav" target="_blank">→ Command Center</a>
   </div>
 </div>
 
-<!-- ── MAIN ──────────────────────────────────────────────────────── -->
+<!-- MAIN -->
 <div id="main">
   <div id="topbar">
-    <span class="topbar-title">Geopolitical Signal Bot</span>
-    <div class="topbar-right">
-      <div class="topbar-dot"></div>
+    <span class="tb-title">Geopolitical Signal Bot</span>
+    <div class="tb-right">
+      <div class="live-dot"></div>
       <span id="clock">--:--:--</span>
     </div>
   </div>
-
-  <div id="chat-area"></div>
-
-  <div id="input-area">
-    <input id="msg-input" type="text"
-      placeholder="Ask about a company, event, or market signal…"
+  <div id="chat"></div>
+  <div id="input-wrap">
+    <input id="input" type="text"
+      placeholder="Type a company name or ticker — e.g. GRSE.NS, Mazagon Dock, HAL…"
       autocomplete="off">
-    <button id="send-btn">→</button>
+    <button id="send">→</button>
   </div>
 </div>
 
 <script>
 // ── CLOCK ──────────────────────────────────────────────────────────
-function updateClock() {
-  const now = new Date();
-  document.getElementById('clock').textContent =
-    now.toLocaleTimeString('en-US', {hour12: false, hour:'2-digit', minute:'2-digit', second:'2-digit'});
-}
-setInterval(updateClock, 1000);
-updateClock();
+(function clock(){
+  const el = document.getElementById('clock');
+  setInterval(()=>{
+    el.textContent = new Date().toLocaleTimeString('en-US',
+      {hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  },1000);
+})();
 
-// ── DOM REFS ───────────────────────────────────────────────────────
-const chatArea = document.getElementById('chat-area');
-const msgInput = document.getElementById('msg-input');
-const sendBtn  = document.getElementById('send-btn');
+// ── REFS ───────────────────────────────────────────────────────────
+const chatEl = document.getElementById('chat');
+const input  = document.getElementById('input');
+const sendBtn= document.getElementById('send');
 
-// ── SCROLL ─────────────────────────────────────────────────────────
-function scrollBottom() {
-  chatArea.scrollTop = chatArea.scrollHeight;
-}
+function scrollBottom(){ chatEl.scrollTop = chatEl.scrollHeight; }
 
-// ── GREETING ───────────────────────────────────────────────────────
-function timeGreeting() {
+function timeGreeting(){
   const h = new Date().getHours();
-  if (h < 12) return 'Good morning';
-  if (h < 17) return 'Good afternoon';
-  return 'Good evening';
+  return h<12?'Good morning':h<17?'Good afternoon':'Good evening';
 }
 
-// ── WATCHLIST SIDEBAR ──────────────────────────────────────────────
-async function loadSidebarWatchlist() {
-  try {
-    const res = await fetch('/watchlist');
-    const wl  = await res.json();
-    renderSidebarWatchlist(wl);
-  } catch (e) {
-    document.getElementById('watchlist-sidebar').innerHTML =
-      '<div class="wl-empty">Unable to load watchlist.</div>';
-  }
+// ── UTILS ──────────────────────────────────────────────────────────
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function escAttr(s){ return String(s||'').replace(/'/g,"\\'"); }
+
+function fmtNum(n){
+  if(n==null) return '—';
+  n = parseFloat(n);
+  if(isNaN(n)) return '—';
+  if(Math.abs(n)>=1e12) return (n/1e12).toFixed(2)+'T';
+  if(Math.abs(n)>=1e9)  return (n/1e9).toFixed(2)+'B';
+  if(Math.abs(n)>=1e6)  return (n/1e6).toFixed(2)+'M';
+  if(Math.abs(n)>=1e3)  return (n/1e3).toFixed(1)+'K';
+  return n.toFixed(2);
 }
 
-function renderSidebarWatchlist(wl) {
-  const el = document.getElementById('watchlist-sidebar');
-  if (!wl.length) {
-    el.innerHTML = '<div class="wl-empty">No companies watched yet.</div>';
-    return;
-  }
-  el.innerHTML = wl.map(c => `
-    <div class="watchlist-item" id="wl-side-${c.ticker.replace('.','_')}">
+function currSym(code){
+  return {INR:'₹',USD:'$',AUD:'A$',GBP:'£',CAD:'C$',SEK:'kr',NOK:'kr',HKD:'HK$'}[code]||code||'';
+}
+
+function fmtPrice(val,curr){
+  if(val==null) return '—';
+  return currSym(curr)+parseFloat(val).toFixed(2);
+}
+
+function fmtVol(v){
+  if(v==null) return '—';
+  v=parseFloat(v);
+  if(v>=1e9) return (v/1e9).toFixed(1)+'B';
+  if(v>=1e6) return (v/1e6).toFixed(1)+'M';
+  if(v>=1e3) return (v/1e3).toFixed(0)+'K';
+  return v.toLocaleString();
+}
+
+// ── SIDEBAR WATCHLIST ──────────────────────────────────────────────
+async function loadSidebar(){
+  try{
+    const wl = await fetch('/watchlist').then(r=>r.json());
+    renderSidebar(wl);
+  }catch(e){ document.getElementById('wl-sidebar').innerHTML='<div class="wl-empty">Error loading.</div>'; }
+}
+
+function renderSidebar(wl){
+  const el = document.getElementById('wl-sidebar');
+  if(!wl.length){ el.innerHTML='<div class="wl-empty">No companies tracked yet.</div>'; return; }
+  el.innerHTML = wl.map(c=>`
+    <div class="wl-row" onclick="sendMsg('${escAttr(c.ticker)}')" id="sbr-${c.ticker.replace(/\./g,'_')}">
       <div class="wl-info">
-        <div class="wl-name">${c.name}</div>
-        <div class="wl-ticker">${c.ticker}</div>
+        <div class="wl-name">${esc(c.name)}</div>
+        <div class="wl-ticker">${esc(c.ticker)}</div>
       </div>
-      <button class="wl-remove" onclick="removeFromSidebar('${c.ticker}')" title="Remove">×</button>
+      <button class="wl-x" onclick="event.stopPropagation();removeSidebar('${escAttr(c.ticker)}')" title="Remove">×</button>
     </div>`).join('');
 }
 
-async function removeFromSidebar(ticker) {
-  try {
-    await fetch('/watchlist/remove', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ticker})
-    });
-    loadSidebarWatchlist();
-    appendBot({
-      type: 'confirmation',
-      message: `Removed ${ticker} from your watchlist.`,
-      data: {action: 'removed', company: {name: ticker, ticker}}
-    });
-  } catch(e) { console.error(e); }
+async function removeSidebar(ticker){
+  await fetch('/watchlist/remove',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ticker})});
+  loadSidebar();
+  appendBot({type:'confirmation',message:`Removed ${ticker} from watchlist.`,
+             data:{action:'removed',company:{name:ticker,ticker}}});
 }
 
 // ── APPEND MESSAGES ────────────────────────────────────────────────
-function appendUser(text) {
-  const row = document.createElement('div');
-  row.className = 'msg-row user-row';
-  row.innerHTML = `
-    <div class="msg-avatar">YOU</div>
-    <div class="msg-bubble">${escHtml(text)}</div>`;
-  chatArea.appendChild(row);
+function appendUser(text){
+  const r = document.createElement('div');
+  r.className='row usr';
+  r.innerHTML=`<div class="avatar">YOU</div><div class="bubble">${esc(text)}</div>`;
+  chatEl.appendChild(r);
   scrollBottom();
 }
 
-function appendTyping() {
-  const row = document.createElement('div');
-  row.className = 'msg-row';
-  row.id = 'typing-row';
-  row.innerHTML = `
-    <div class="msg-avatar">GSE</div>
-    <div class="msg-bubble">
-      <div class="typing-dots"><span></span><span></span><span></span></div>
-    </div>`;
-  chatArea.appendChild(row);
-  scrollBottom();
-  return row;
+function showTyping(){
+  const r = document.createElement('div');
+  r.className='row'; r.id='typing';
+  r.innerHTML=`<div class="avatar">GSE</div>
+    <div class="bubble"><div class="dots"><span></span><span></span><span></span></div></div>`;
+  chatEl.appendChild(r); scrollBottom(); return r;
 }
+function hideTyping(){ const el=document.getElementById('typing'); if(el) el.remove(); }
 
-function removeTyping() {
-  const el = document.getElementById('typing-row');
-  if (el) el.remove();
-}
-
-function appendBot(data, chips) {
-  const row = document.createElement('div');
-  row.className = 'msg-row';
-  row.innerHTML = `
-    <div class="msg-avatar">GSE</div>
-    <div class="msg-bubble">${renderCard(data)}</div>`;
-  chatArea.appendChild(row);
-  if (chips && chips.length) {
-    const chipRow = document.createElement('div');
-    chipRow.className = 'msg-row';
-    chipRow.innerHTML = `
-      <div class="msg-avatar" style="opacity:0;pointer-events:none">GSE</div>
-      <div class="chips">${chips.map(c =>
-        `<button class="chip" onclick="sendChip(this,'${escAttr(c)}')">${escHtml(c)}</button>`
-      ).join('')}</div>`;
-    chatArea.appendChild(chipRow);
+function appendBot(resp, chips){
+  const r = document.createElement('div');
+  r.className='row';
+  r.innerHTML=`<div class="avatar">GSE</div><div class="bubble">${renderCard(resp)}</div>`;
+  chatEl.appendChild(r);
+  if(chips&&chips.length){
+    const cr = document.createElement('div');
+    cr.className='row';
+    cr.innerHTML=`<div class="avatar" style="opacity:0;pointer-events:none">GSE</div>
+      <div class="chips">${chips.map(c=>`<button class="chip" onclick="useChip(this,'${escAttr(c)}')">${esc(c)}</button>`).join('')}</div>`;
+    chatEl.appendChild(cr);
   }
   scrollBottom();
 }
 
-function sendChip(btn, text) {
-  // Remove the whole chip container row
-  const chipRow = btn.closest('.msg-row');
-  if (chipRow) chipRow.remove();
-  sendMessage(text);
+function useChip(btn,text){
+  btn.closest('.row').remove();
+  sendMsg(text);
 }
 
-// ── CARD RENDERER ──────────────────────────────────────────────────
-function renderCard(resp) {
-  const type = resp.type;
-  const msg  = resp.message || '';
-  const d    = resp.data    || {};
-
-  if (type === 'welcome')       return renderWelcome(msg);
-  if (type === 'company_card')  return renderCompany(msg, d);
-  if (type === 'signal_table')  return renderSignalTable(msg, d);
-  if (type === 'gold_card')     return renderGold(msg, d);
-  if (type === 'watchlist_card')return renderWatchlistCard(msg, d);
-  if (type === 'confirmation')  return renderConfirmation(msg, d);
-  if (type === 'scan_results')  return renderScanResults(msg, d);
-  if (type === 'help')          return renderHelp(msg);
-
-  return `<div class="msg-text">${escHtml(msg)}</div>`;
+// ── CARD ROUTER ────────────────────────────────────────────────────
+function renderCard(resp){
+  const {type,message,data} = resp;
+  if(type==='welcome')       return renderWelcome();
+  if(type==='company_brief') return renderBrief(data);
+  if(type==='watchlist_card')return renderWatchlistCard(data);
+  if(type==='confirmation')  return renderConfirmation(message,data);
+  if(type==='help')          return renderHelp(message);
+  if(type==='error')         return renderError(message);
+  return `<div class="msg-text">${esc(message||'')}</div>`;
 }
 
-// WELCOME
-function renderWelcome(msg) {
+// ── ERROR ───────────────────────────────────────────────────────────
+function renderError(msg){
+  return `<div style="color:var(--down);font-family:'DM Mono',monospace;font-size:11px;padding:4px 0">
+    ⚠ ${esc(msg||'Unknown error')}
+  </div>
+  <div style="font-size:11px;color:var(--text-dim);margin-top:6px">
+    Check the terminal for the full traceback.
+  </div>`;
+}
+
+// ── WELCOME ────────────────────────────────────────────────────────
+function renderWelcome(){
   return `
-    <div class="welcome-greeting">${timeGreeting()}, Vaibhav.</div>
-    <div class="welcome-sub">I monitor geopolitical signals across 160 companies in real time.<br>
-    Ask me about any company, conflict, trade event, or gold signal.</div>`;
-}
-
-// COMPANY CARD
-function renderCompany(msg, d) {
-  const expo   = (d.revenue_exposure   || []).map(x =>
-    `<span class="meta-pill pill-exposure">${escHtml(x)}</span>`).join('');
-  const supply = (d.supply_chain_dependencies || []).map(x =>
-    `<span class="meta-pill pill-supply">${escHtml(x)}</span>`).join('');
-  const inWL   = d.in_watchlist;
-  return `
-    <div class="card-label">Company Profile</div>
-    <div class="company-name">${escHtml(d.name)}</div>
-    <div class="company-ticker">${escHtml(d.ticker)}</div>
-    <div class="company-meta">
-      <span class="meta-pill pill-sector">${escHtml(d.sector)}</span>
-      <span class="meta-pill pill-hq">${escHtml(d.headquarters_country || '')}</span>
-      <span class="meta-pill pill-cap">${escHtml(d.market_cap_category || '')}</span>
-    </div>
-    ${expo ? `<div style="margin:6px 0 4px;font-size:10px;color:var(--text-dim);font-family:'DM Mono',monospace;letter-spacing:.1em">REVENUE EXPOSURE</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${expo}</div>` : ''}
-    ${supply ? `<div style="margin:4px 0 4px;font-size:10px;color:var(--text-dim);font-family:'DM Mono',monospace;letter-spacing:.1em">SUPPLY CHAIN</div>
-    <div style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px">${supply}</div>` : ''}
-    ${d.geopolitical_sensitivity ? `<div class="company-geo">${escHtml(d.geopolitical_sensitivity)}</div>` : ''}
-    <div class="card-actions">
-      <button class="card-btn primary" onclick="sendChipDirect('analyze ${escAttr(d.ticker)}')">Analyze signals</button>
-      ${!inWL ? `<button class="card-btn" onclick="addToWatchlistCard('${escAttr(d.ticker)}',this)">+ Add to watchlist</button>` : `<span class="card-btn" style="opacity:.4;cursor:default;pointer-events:none">★ In watchlist</span>`}
+    <div class="welcome-h">${esc(timeGreeting())}, Vaibhav.</div>
+    <div class="welcome-sub">
+      Type any company name or ticker symbol — I'll pull live price data,
+      recent news, and a geopolitical signal brief specific to that company.
     </div>`;
 }
 
-async function addToWatchlistCard(ticker, btn) {
-  btn.textContent = '…';
-  btn.disabled = true;
-  try {
-    const res  = await fetch('/watchlist/add', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ticker})
+// ── COMPANY BRIEF ──────────────────────────────────────────────────
+function renderBrief(d){
+  const c   = d.company || {};
+  const p   = d.price;
+  const geo = d.geo_impact;
+  const s   = d.sentiment || {};
+  const out = [];
+
+  // ── Section 1: Header
+  out.push(`<div class="lbl">Company Profile</div>`);
+  out.push(`<div class="co-name">${esc(d.name)}</div>`);
+  out.push(`<div class="co-ticker">${esc(d.ticker)}</div>`);
+  if(d.in_database){
+    out.push(`<div class="co-meta">
+      ${c.sector?`<span class="pill pill-sector">${esc(c.sector)}</span>`:''}
+      ${c.headquarters_country?`<span class="pill pill-neutral">${esc(c.headquarters_country)}</span>`:''}
+      ${c.market_cap_category?`<span class="pill pill-neutral">${esc(c.market_cap_category)} cap</span>`:''}
+    </div>`);
+    if(c.geopolitical_sensitivity)
+      out.push(`<div class="co-geo">${esc(c.geopolitical_sensitivity)}</div>`);
+  }
+
+  // ── Section 2: Price
+  out.push(`<div class="divider"></div>`);
+  out.push(`<div class="lbl">Live Price Data</div>`);
+  if(p){
+    const sym    = currSym(p.currency||'');
+    const chgCls = p.change_percent>0?'up':p.change_percent<0?'down':'flat';
+    const chgPfx = p.change_percent>0?'+':'';
+    out.push(`
+      <div class="price-main">
+        <span class="price-val">${sym}${p.current_price!=null?parseFloat(p.current_price).toFixed(2):'—'}</span>
+        <span class="price-chg ${chgCls}">${chgPfx}${p.change_percent!=null?parseFloat(p.change_percent).toFixed(2):'—'}%</span>
+      </div>
+      <div class="price-grid">
+        <div class="pg-cell"><div class="pg-label">Day High</div><div class="pg-val">${sym}${p.day_high!=null?parseFloat(p.day_high).toFixed(2):'—'}</div></div>
+        <div class="pg-cell"><div class="pg-label">Day Low</div><div class="pg-val">${sym}${p.day_low!=null?parseFloat(p.day_low).toFixed(2):'—'}</div></div>
+        <div class="pg-cell"><div class="pg-label">52W High</div><div class="pg-val">${sym}${p.week_52_high!=null?parseFloat(p.week_52_high).toFixed(2):'—'}</div></div>
+        <div class="pg-cell"><div class="pg-label">52W Low</div><div class="pg-val">${sym}${p.week_52_low!=null?parseFloat(p.week_52_low).toFixed(2):'—'}</div></div>
+      </div>
+      <div class="price-footer">
+        <span>Vol: ${fmtVol(p.volume)}</span>
+        <span>Mkt Cap: ${sym}${fmtNum(p.market_cap)}</span>
+        ${p.pe_ratio!=null?`<span>P/E: ${parseFloat(p.pe_ratio).toFixed(2)}</span>`:''}
+        <span style="color:var(--text-dim);margin-left:auto">via Yahoo Finance</span>
+      </div>`);
+  } else {
+    out.push(`<div class="price-unavail">Price data unavailable for this ticker.</div>`);
+  }
+
+  // ── Section 3: Geopolitical Signal
+  if(geo){
+    out.push(`<div class="divider"></div>`);
+    out.push(`<div class="lbl">Geopolitical Signal</div>`);
+    out.push(`<div class="sig-big ${esc(geo.signal)}">${esc(geo.signal)}</div>`);
+    out.push(`<div class="sig-meta">
+      <span class="conf-badge">${esc(geo.confidence)} confidence</span>
+      <span class="pill pill-neutral">${esc(geo.driver)}</span>
+      ${geo.primary_event?`<span class="pill pill-neutral">${esc(geo.primary_event)}</span>`:''}
+    </div>`);
+    out.push(`<div class="sig-reason">${esc(geo.reasoning)}</div>`);
+    if(geo.active_events&&geo.active_events.length){
+      out.push(`<div class="event-pills">${geo.active_events.map(e=>`<span class="pill pill-neutral">${esc(e)}</span>`).join('')}</div>`);
+    }
+  }
+
+  // ── Section 4: News Sentiment
+  out.push(`<div class="divider"></div>`);
+  out.push(`<div class="lbl">News Sentiment</div>`);
+  out.push(`<div class="sent-grid">
+    <div class="sent-cell"><div class="sent-val">${s.panic||0}</div><div class="sent-label">Panic</div></div>
+    <div class="sent-cell"><div class="sent-val">${s.boycott||0}</div><div class="sent-label">Boycott</div></div>
+    <div class="sent-cell"><div class="sent-val">${s.trust_collapse||0}</div><div class="sent-label">Trust Collapse</div></div>
+  </div>`);
+  const mood = (s.overall_sentiment||'neutral').toLowerCase();
+  out.push(`<span class="sent-mood ${esc(mood)}">${esc(mood.toUpperCase())}</span>`);
+
+  // ── Section 5: News
+  out.push(`<div class="divider"></div>`);
+  out.push(`<div class="lbl">Latest News</div>`);
+  const news = d.news||[];
+  if(news.length){
+    out.push(`<div class="news-list">`);
+    news.slice(0,6).forEach(a=>{
+      const url = a.url||'#';
+      out.push(`<div class="news-item">
+        <div class="news-title"><a href="${esc(url)}" target="_blank" rel="noopener">${esc(a.title||'Untitled')}</a></div>
+        <div class="news-meta">${esc(a.source||'')}${a.date?' · '+esc(a.date):''}</div>
+      </div>`);
     });
-    const data = await res.json();
-    btn.textContent = '★ In watchlist';
-    btn.style.opacity = '0.4';
-    btn.style.cursor  = 'default';
-    btn.style.pointerEvents = 'none';
-    loadSidebarWatchlist();
-  } catch(e) { btn.textContent = 'Error'; }
-}
-
-// SIGNAL TABLE
-function renderSignalTable(msg, d) {
-  const sigs     = d.company_signals || [];
-  const psych    = d.psychology_summary || {};
-  const summary  = d.summary || {};
-  const hl       = (d.highlight_ticker || '').toUpperCase();
-  const total    = summary.total || sigs.length || 1;
-  const upPct    = Math.round((summary.up_count || 0) / total * 100);
-  const downPct  = Math.round((summary.down_count || 0) / total * 100);
-  const neutPct  = 100 - upPct - downPct;
-
-  const rows = sigs.map(s => {
-    const isHL = s.ticker.toUpperCase() === hl;
-    const sc   = s.signal === 'UP' ? 'sig-up' : s.signal === 'DOWN' ? 'sig-down' : 'sig-neut';
-    const arr  = s.signal === 'UP' ? '↑' : s.signal === 'DOWN' ? '↓' : '–';
-    return `<tr class="${isHL ? 'highlight' : ''}">
-      <td class="${sc}">${arr} ${escHtml(s.signal)}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:11px">${escHtml(s.ticker)}</td>
-      <td style="color:var(--text-mid);font-size:12px">${escHtml(s.name || '')}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim)">${s.final_score !== undefined ? (s.final_score > 0 ? '+' : '') + s.final_score.toFixed(2) : ''}</td>
-      <td><span class="conf-badge">${escHtml(s.confidence || '')}</span></td>
-      <td style="color:var(--text-dim);font-size:11px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${escHtml(s.driver || '')}</td>
-    </tr>`;
-  }).join('');
-
-  return `
-    <div class="signal-header">
-      <div class="signal-keyword">${escHtml(msg)}</div>
-    </div>
-    <div class="psych-row">
-      <span class="psych-pill">panic ${psych.avg_panic || 0}</span>
-      <span class="psych-pill">boycott ${psych.avg_boycott || 0}</span>
-      <span class="psych-pill">trust-collapse ${psych.avg_trust_collapse || 0}</span>
-      <span class="psych-pill" style="color:var(--gold)">${escHtml((psych.overall_mood || '').toUpperCase())}</span>
-    </div>
-    <div style="overflow-x:auto">
-      <table class="sig-table">
-        <thead><tr>
-          <th>Signal</th><th>Ticker</th><th>Company</th>
-          <th>Score</th><th>Confidence</th><th>Driver</th>
-        </tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>
-    <div class="dist-bar" style="margin-top:12px">
-      <div class="dist-up"   style="width:${upPct}%"></div>
-      <div class="dist-down" style="width:${downPct}%"></div>
-      <div class="dist-neut" style="width:${Math.max(neutPct,0)}%"></div>
-    </div>
-    <div class="dist-label">
-      <span class="dl-up">↑ ${summary.up_count || 0} UP</span>
-      <span class="dl-down">↓ ${summary.down_count || 0} DOWN</span>
-      <span class="dl-neut">– ${summary.neutral_count || 0} NEUTRAL</span>
-    </div>`;
-}
-
-// GOLD CARD
-function renderGold(msg, d) {
-  const sig   = (d.signal || 'NEUTRAL').toUpperCase();
-  const cls   = sig === 'BULLISH' || sig === 'UP' ? 'bullish'
-              : sig === 'BEARISH' || sig === 'DOWN' ? 'bearish' : 'neutral';
-  const bars  = Array(8).fill('<div class="gold-bar-block"></div>').join('');
-  return `
-    <div class="card-label">Gold Signal</div>
-    <div class="gold-verdict ${cls}">${sig}</div>
-    <div class="gold-stats">
-      Score ${d.final_score !== undefined ? (d.final_score > 0 ? '+' : '') + d.final_score.toFixed(2) : '—'}
-      &nbsp;|&nbsp; Confidence: ${escHtml(d.confidence || '—')}
-      ${d.driver ? `&nbsp;|&nbsp; ${escHtml(d.driver)}` : ''}
-    </div>
-    ${d.reasoning ? `<div class="gold-reason">${escHtml(d.reasoning)}</div>` : ''}
-    <div class="gold-bar-wrap">${bars}</div>`;
-}
-
-// WATCHLIST CARD
-function renderWatchlistCard(msg, d) {
-  const wl = d.watchlist || [];
-  if (!wl.length) {
-    return `<div class="card-label">Your Watchlist</div>
-      <div class="msg-text">Your watchlist is empty. Add companies by saying <em>"add HAL.NS"</em>.</div>`;
+    out.push(`</div>`);
+  } else {
+    out.push(`<div class="no-news">No recent news articles found for this company.</div>`);
   }
-  const rows = wl.map(c => `
-    <tr>
-      <td>${escHtml(c.name)}</td>
-      <td class="wl-ticker-cell">${escHtml(c.ticker)}</td>
-      <td style="color:var(--text-dim);font-size:11px">${escHtml(c.sector)}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim)">${c.buy_price || '—'}</td>
-      <td style="font-size:11px;color:var(--text-dim)">${escHtml(c.notes || '')}</td>
-      <td class="wl-remove-cell">
-        <button onclick="sendChipDirect('remove ${escAttr(c.ticker)}')">×</button>
-      </td>
-    </tr>`).join('');
-  return `
-    <div class="card-label">Your Watchlist — ${wl.length} ${wl.length === 1 ? 'company' : 'companies'}</div>
-    <div style="overflow-x:auto">
-      <table class="wl-table">
-        <thead><tr><th>Company</th><th>Ticker</th><th>Sector</th><th>Buy Price</th><th>Notes</th><th></th></tr></thead>
-        <tbody>${rows}</tbody>
-      </table>
-    </div>`;
+
+  // ── Section 6: Earnings
+  const earnings = d.earnings||[];
+  if(earnings.length){
+    out.push(`<div class="divider"></div>`);
+    out.push(`<div class="lbl">Recent Earnings (EPS)</div>`);
+    out.push(`<div style="overflow-x:auto"><table class="earn-table">
+      <thead><tr><th>Quarter</th><th>Actual EPS</th><th>Estimated EPS</th><th>Surprise</th></tr></thead><tbody>`);
+    earnings.forEach(e=>{
+      const beat   = (e.actual_eps||0) >= (e.estimated_eps||0);
+      const sp     = e.surprise_pct||0;
+      const spCls  = sp>0?'beat':sp<0?'miss':'in-line';
+      const spPfx  = sp>0?'+':'';
+      out.push(`<tr>
+        <td>${esc(e.date||'—')}</td>
+        <td>${e.actual_eps!=null?e.actual_eps:'—'}</td>
+        <td>${e.estimated_eps!=null?e.estimated_eps:'—'}</td>
+        <td class="${spCls}">${spPfx}${sp}%</td>
+      </tr>`);
+    });
+    out.push(`</tbody></table></div>`);
+  }
+
+  // ── Section 7: Actions
+  out.push(`<div class="divider"></div>`);
+  out.push(`<div class="actions">`);
+  if(d.in_database){
+    const inWL = d.in_watchlist;
+    out.push(`<button class="btn${inWL?' added':''}" id="wl-btn-${esc(d.ticker.replace(/\./g,'_'))}"
+      onclick="${inWL?'':` addToWL(this,'${escAttr(d.ticker)}')`}">
+      ${inWL?'★ In watchlist':'+ Add to watchlist'}
+    </button>`);
+  }
+  out.push(`<button class="btn secondary" onclick="clearInput()">Ask about another →</button>`);
+  out.push(`</div>`);
+
+  return out.join('');
 }
 
-// CONFIRMATION CARD
-function renderConfirmation(msg, d) {
-  const action  = d.action || '';
-  const company = d.company || {};
-  const icon    = action === 'removed' ? '✕' : action === 'already_exists' ? '◈' : '✓';
-  const color   = action === 'removed' ? 'var(--down)' : action === 'already_exists' ? 'var(--gold-dim)' : 'var(--gold)';
-  return `
-    <div class="conf-check" style="color:${color}">${icon}</div>
-    <div class="conf-title">${escHtml(company.name || msg)}</div>
-    <div class="conf-body">${escHtml(msg)}</div>`;
+async function addToWL(btn, ticker){
+  btn.textContent='…'; btn.disabled=true;
+  try{
+    const r = await fetch('/watchlist/add',{method:'POST',
+      headers:{'Content-Type':'application/json'},body:JSON.stringify({ticker})});
+    const d = await r.json();
+    btn.textContent='★ In watchlist';
+    btn.classList.add('added');
+    loadSidebar();
+  }catch(e){ btn.textContent='Error'; btn.disabled=false; }
 }
 
-// SCAN RESULTS
-function renderScanResults(msg, d) {
-  const regions  = d.region_activity || [];
-  const agg      = d.aggregated_signals || [];
-  const summary  = d.summary || {};
-  const total    = summary.total || 1;
-  const upPct    = Math.round((summary.up_count || 0) / total * 100);
-  const downPct  = Math.round((summary.down_count || 0) / total * 100);
-  const neutPct  = 100 - upPct - downPct;
-
-  const regionCards = regions.map(r => {
-    const gc = (r.gold || '').toUpperCase();
-    const gcls = gc === 'BULLISH' || gc === 'UP' ? 'up' : gc === 'BEARISH' || gc === 'DOWN' ? 'down' : 'neutral';
-    return `
-      <div class="scan-region-card">
-        <div class="scan-region-name">${escHtml(r.region)}</div>
-        <div class="scan-keyword">${escHtml(r.keyword)}</div>
-        <div class="scan-counts">
-          <span class="sc-up">↑${r.up}</span>
-          <span class="sc-down">↓${r.down}</span>
-          <span class="sc-neut">–${r.neutral}</span>
-        </div>
-        <div class="scan-gold-badge ${gcls}">Gold: ${gc || 'N/A'}</div>
-      </div>`;
-  }).join('');
-
-  const topRows = agg.slice(0,8).map(s => {
-    const sc  = s.signal === 'UP' ? 'sig-up' : s.signal === 'DOWN' ? 'sig-down' : 'sig-neut';
-    const arr = s.signal === 'UP' ? '↑' : s.signal === 'DOWN' ? '↓' : '–';
-    return `<tr>
-      <td class="${sc}">${arr} ${escHtml(s.signal)}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:11px">${escHtml(s.ticker)}</td>
-      <td style="color:var(--text-mid);font-size:12px">${escHtml(s.name || '')}</td>
-      <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim)">${s.final_score !== undefined ? (s.final_score > 0 ? '+' : '') + s.final_score.toFixed(2) : ''}</td>
-    </tr>`;
-  }).join('');
-
-  return `
-    <div class="card-label">Global Market Scan</div>
-    <div class="msg-text">${escHtml(msg)}</div>
-    <div class="scan-grid">${regionCards}</div>
-    <div style="overflow-x:auto">
-      <table class="sig-table">
-        <thead><tr><th>Signal</th><th>Ticker</th><th>Company</th><th>Score</th></tr></thead>
-        <tbody>${topRows}</tbody>
-      </table>
-    </div>
-    <div class="dist-bar">
-      <div class="dist-up"   style="width:${upPct}%"></div>
-      <div class="dist-down" style="width:${downPct}%"></div>
-      <div class="dist-neut" style="width:${Math.max(neutPct,0)}%"></div>
-    </div>
-    <div class="dist-label">
-      <span class="dl-up">↑ ${summary.up_count || 0} UP</span>
-      <span class="dl-down">↓ ${summary.down_count || 0} DOWN</span>
-      <span class="dl-neut">– ${summary.neutral_count || 0} NEUTRAL</span>
-    </div>`;
+// ── WATCHLIST CARD ─────────────────────────────────────────────────
+function renderWatchlistCard(d){
+  const wl = d.watchlist||[];
+  if(!wl.length) return `<div class="lbl">Your Watchlist</div>
+    <div class="no-news">No companies tracked. Try: "add GRSE.NS to watchlist"</div>`;
+  const rows = wl.map(c=>`<tr onclick="sendMsg('${escAttr(c.ticker)}')" title="Look up ${esc(c.name)}">
+    <td>${esc(c.name)}</td>
+    <td class="wl-t">${esc(c.ticker)}</td>
+    <td style="color:var(--text-dim);font-size:11px">${esc(c.sector||'')}</td>
+    <td style="font-family:'DM Mono',monospace;font-size:11px;color:var(--text-dim)">${c.buy_price||'—'}</td>
+    <td><button class="wl-rm" onclick="event.stopPropagation();sendMsg('remove ${escAttr(c.ticker)}')">×</button></td>
+  </tr>`).join('');
+  return `<div class="lbl">Your Watchlist — ${wl.length} ${wl.length===1?'company':'companies'}</div>
+    <div style="overflow-x:auto"><table class="wl-table">
+      <thead><tr><th>Company</th><th>Ticker</th><th>Sector</th><th>Buy Price</th><th></th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table></div>
+    <div style="margin-top:10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--text-dim)">
+      Click any row to look up that company.</div>`;
 }
 
-// HELP CARD
-function renderHelp(msg) {
-  const examples = [
-    'What is GRSE.NS?',
-    'How will Iran conflict affect shipping companies?',
-    'Add HAL.NS to my watchlist',
-    'Show my watchlist',
-    "What's the gold signal for Middle East conflict?",
-    'Global market briefing',
-    'How will China trade war affect semiconductors?',
-    'Analyze Russia Ukraine impact',
+// ── CONFIRMATION ───────────────────────────────────────────────────
+function renderConfirmation(msg, d){
+  const action = d.action||'';
+  const icon   = action==='removed'?'✕':action==='already_exists'?'◈':'✓';
+  const color  = action==='removed'?'var(--down)':action==='already_exists'?'var(--gold-dim)':'var(--gold)';
+  return `<div class="conf-icon" style="color:${color}">${icon}</div>
+    <div class="conf-title">${esc(d.company?d.company.name:'')||esc(msg)}</div>
+    <div class="conf-body">${esc(msg)}</div>`;
+}
+
+// ── HELP ───────────────────────────────────────────────────────────
+function renderHelp(msg){
+  const examples=[
+    'GRSE.NS','Mazagon Dock Shipbuilders',
+    'HAL.NS','Bharat Electronics',
+    'Show my watchlist','Add MAZDOCK.NS to watchlist',
+    'Remove GRSE.NS','Kosmos Energy',
   ];
-  const chips = examples.map(e =>
-    `<div class="help-chip" onclick="sendChipDirect('${escAttr(e)}')">${escHtml(e)}</div>`
-  ).join('');
-  return `
-    <div class="card-label">How can I help?</div>
-    <div class="msg-text">${escHtml(msg || "Here are some things you can ask:")}</div>
-    <div class="help-grid">${chips}</div>`;
+  return `<div class="lbl">How can I help?</div>
+    <div class="msg-text">${esc(msg||'Try one of these, or type any company name or ticker:')}</div>
+    <div class="help-grid">${examples.map(e=>`<div class="help-item" onclick="sendMsg('${escAttr(e)}')">${esc(e)}</div>`).join('')}</div>`;
 }
 
 // ── SEND ───────────────────────────────────────────────────────────
-async function sendMessage(text) {
-  if (!text.trim()) return;
+async function sendMsg(text){
+  text = (text||'').trim();
+  if(!text) return;
+  input.value='';
   appendUser(text);
-  const typingRow = appendTyping();
+  showTyping();
+
+  let res, rawText, data;
+  try {
+    res = await fetch('/chat', {
+      method:  'POST',
+      headers: {'Content-Type': 'application/json'},
+      body:    JSON.stringify({message: text}),
+    });
+  } catch(netErr) {
+    console.error('[CHAT] Network error:', netErr);
+    hideTyping();
+    appendBot({type:'error', message:`Network error: ${netErr.message} — is the server running on port 5002?`, data:{}});
+    return;
+  }
 
   try {
-    const res  = await fetch('/chat', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({message: text})
-    });
-    const data = await res.json();
-    removeTyping();
+    rawText = await res.text();
+  } catch(readErr) {
+    console.error('[CHAT] Could not read response body:', readErr);
+    hideTyping();
+    appendBot({type:'error', message:'Could not read server response.', data:{}});
+    return;
+  }
 
-    // Decide chips for bot reply
-    let chips = [];
-    if (data.type === 'welcome') {
-      chips = ['🌍 Global market briefing', '📊 Analyze Iran conflict',
-               '⭐ Show my watchlist', '🥇 Gold signal today'];
-    } else if (data.type === 'company_card') {
-      chips = [`Analyze signals for ${data.data.ticker}`,
-               `Gold signal for ${detectRegionFromData(data.data)}`];
-    } else if (data.type === 'signal_table') {
-      chips = ['🥇 Gold signal today', '⭐ Show my watchlist'];
-    } else if (data.type === 'scan_results') {
-      chips = ['📊 Analyze Iran conflict', '🥇 Gold signal today'];
-    }
+  console.log(`[CHAT] HTTP ${res.status} — raw (first 500 chars):`, rawText.slice(0, 500));
 
-    appendBot(data, chips);
+  try {
+    data = JSON.parse(rawText);
+  } catch(parseErr) {
+    console.error('[CHAT] JSON parse failed:', parseErr, '\nFull response:', rawText);
+    hideTyping();
+    appendBot({type:'error',
+      message:`Server returned non-JSON (HTTP ${res.status}). Check the terminal for the traceback.`,
+      data:{}});
+    return;
+  }
 
-    // Refresh sidebar if watchlist changed
-    if (data.type === 'confirmation' &&
-        (data.data.action === 'added' || data.data.action === 'removed')) {
-      loadSidebarWatchlist();
-    }
-  } catch (err) {
-    removeTyping();
-    appendBot({
-      type: 'help',
-      message: 'Something went wrong connecting to the signal engine. Please try again.',
-      data: {}
-    });
+  console.log('[CHAT] Parsed response:', data);
+  hideTyping();
+
+  let chips = [];
+  if(data.type==='welcome'){
+    chips=['GRSE.NS','Mazagon Dock','Bharat Electronics','Show my watchlist'];
+  } else if(data.type==='company_brief' && data.data){
+    const d = data.data;
+    if(!d.in_watchlist && d.in_database) chips.push(`Add ${d.ticker} to watchlist`);
+  } else if(data.type==='confirmation'){
+    if((data.data||{}).action==='added') chips=['Show my watchlist'];
+  }
+
+  appendBot(data, chips);
+
+  if(data.type==='confirmation'){
+    const act = (data.data||{}).action;
+    if(act==='added' || act==='removed') loadSidebar();
   }
 }
 
-function detectRegionFromData(d) {
-  const countries = [...(d.revenue_exposure || []), d.headquarters_country || ''];
-  const countryStr = countries.join(' ').toLowerCase();
-  if (/iran|israel|saudi|iraq|gulf/.test(countryStr)) return 'Middle East conflict';
-  if (/china|india|japan|korea|taiwan/.test(countryStr)) return 'Asia trade war';
-  if (/russia|ukraine|germany|france/.test(countryStr)) return 'Europe conflict';
-  return 'global conflict';
-}
-
-function sendChipDirect(text) {
-  sendMessage(text);
-}
-
-function escHtml(str) {
-  return String(str || '')
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function escAttr(str) {
-  return String(str || '').replace(/'/g,"\\'");
+function clearInput(){
+  input.value='';
+  input.focus();
 }
 
 // ── EVENT LISTENERS ────────────────────────────────────────────────
-sendBtn.addEventListener('click', () => {
-  const t = msgInput.value.trim();
-  if (t) { msgInput.value = ''; sendMessage(t); }
-});
-msgInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') {
-    const t = msgInput.value.trim();
-    if (t) { msgInput.value = ''; sendMessage(t); }
-  }
-});
+sendBtn.addEventListener('click',()=>{ const t=input.value.trim(); if(t) sendMsg(t); });
+input.addEventListener('keydown',e=>{ if(e.key==='Enter'){ const t=input.value.trim(); if(t) sendMsg(t); }});
 
 // ── INIT ───────────────────────────────────────────────────────────
-(async function init() {
-  await loadSidebarWatchlist();
-  // Send automatic welcome
-  appendBot({type: 'welcome', message: '', data: {}},
-    ['🌍 Global market briefing', '📊 Analyze Iran conflict',
-     '⭐ Show my watchlist', '🥇 Gold signal today']);
+(async function init(){
+  await loadSidebar();
+  appendBot(
+    {type:'welcome',message:'',data:{}},
+    ['GRSE.NS','Mazagon Dock','Bharat Electronics','Show my watchlist']
+  );
 })();
 </script>
 </body>
